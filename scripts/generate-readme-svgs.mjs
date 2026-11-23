@@ -11,6 +11,7 @@ import { execSync } from "node:child_process";
 
 const USERNAME = process.env.GITHUB_USERNAME || "mike623";
 const OUT_DIR = path.resolve("assets");
+const AVATAR_PATH = path.join(OUT_DIR, "avatar.png");
 const README_PATH = path.resolve("README.md");
 
 // ============================================================================
@@ -584,7 +585,24 @@ function buildStatusSvg(data) {
   }
   const polyPoints = cycles.join(" ");
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 168" width="2460" height="504" role="img" aria-label="${USERNAME} PS1 Biohazard Status ECG ${data.condition}">
+  let portraitSvg = `<g transform="translate(30, 50) scale(5)" shape-rendering="crispEdges">
+      <rect x="4" y="1" width="8" height="3" fill="#1e293b"/>
+      <rect x="3" y="3" width="10" height="2" fill="#0f172a"/>
+      <rect x="4" y="4" width="8" height="6" fill="#e5b895"/>
+      <rect x="5" y="6" width="2" height="1" fill="#0f172a"/>
+      <rect x="9" y="6" width="2" height="1" fill="#0f172a"/>
+      <rect x="6" y="8" width="4" height="1" fill="#b47b60"/>
+      <rect x="2" y="10" width="12" height="6" fill="#1d4ed8"/>
+      <rect x="5" y="10" width="6" height="6" fill="#334155"/>
+      <rect x="7" y="11" width="2" height="4" fill="#94a3b8"/>
+    </g>`;
+  if (fs.existsSync(AVATAR_PATH)) {
+    const avatarB64 = fs.readFileSync(AVATAR_PATH).toString("base64");
+    const dataUri = `data:image/png;base64,${avatarB64}`;
+    portraitSvg = `<image href="${dataUri}" xlink:href="${dataUri}" x="15" y="42" width="110" height="111" preserveAspectRatio="xMidYMid slice" image-rendering="pixelated"/>`;
+  }
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 820 168" width="2460" height="504" role="img" aria-label="${USERNAME} PS1 Biohazard Status ECG ${data.condition}">
   ${sharedDefs(
     "s1",
     `@keyframes ecgScroll { 0% { transform: translateX(0px); } 100% { transform: translateX(-110px); } }
@@ -605,17 +623,7 @@ function buildStatusSvg(data) {
     <rect x="14" y="14" width="112" height="140" fill="#080b20" stroke="#7d89b0" stroke-width="2"/>
     <rect x="15" y="15" width="110" height="27" fill="url(#hdr-s1)"/>
     ${pxText(CONFIG.portraitName, 70, 21, { sx: 2.1, sy: 2.1, fill: "#f8fafc", align: "center" })}
-    <g transform="translate(30, 50) scale(5)" shape-rendering="crispEdges">
-      <rect x="4" y="1" width="8" height="3" fill="#1e293b"/>
-      <rect x="3" y="3" width="10" height="2" fill="#0f172a"/>
-      <rect x="4" y="4" width="8" height="6" fill="#e5b895"/>
-      <rect x="5" y="6" width="2" height="1" fill="#0f172a"/>
-      <rect x="9" y="6" width="2" height="1" fill="#0f172a"/>
-      <rect x="6" y="8" width="4" height="1" fill="#b47b60"/>
-      <rect x="2" y="10" width="12" height="6" fill="#1d4ed8"/>
-      <rect x="5" y="10" width="6" height="6" fill="#334155"/>
-      <rect x="7" y="11" width="2" height="4" fill="#94a3b8"/>
-    </g>
+    ${portraitSvg}
 
     <!-- ECG Heartbeat Panel -->
     <rect x="136" y="14" width="446" height="140" fill="#030b06" stroke="#7d89b0" stroke-width="2"/>
