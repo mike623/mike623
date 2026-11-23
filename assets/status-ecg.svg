@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 148" width="820" height="148" role="img" aria-label="MIKE623 PS1 Biohazard Status ECG Fine">
+  
+  <defs>
+    <linearGradient id="bg-s1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#192057"/>
+      <stop offset="55%" stop-color="#10153a"/>
+      <stop offset="100%" stop-color="#090c24"/>
+    </linearGradient>
+    <linearGradient id="hdr-s1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#68749e"/>
+      <stop offset="100%" stop-color="#37405e"/>
+    </linearGradient>
+    <radialGradient id="vig-s1" cx="50%" cy="50%" r="68%">
+      <stop offset="62%" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.46"/>
+    </radialGradient>
+    <pattern id="scan-s1" width="4" height="4" patternUnits="userSpaceOnUse">
+      <rect width="4" height="2" fill="rgba(0,0,0,0)"/>
+      <rect y="2" width="4" height="2" fill="rgba(0,0,0,0.23)"/>
+    </pattern>
+    <filter id="crt-s1" x="-2%" y="-2%" width="104%" height="104%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="0.56" result="soft"/>
+      <feComponentTransfer in="soft">
+        <feFuncR type="linear" slope="1.05"/>
+        <feFuncG type="linear" slope="1.06"/>
+        <feFuncB type="linear" slope="1.08"/>
+      </feComponentTransfer>
+    </filter>
+  </defs>
+  <defs>
+    <pattern id="ecgGrid" width="12" height="12" patternUnits="userSpaceOnUse">
+      <path d="M 12 0 L 0 0 0 12" fill="none" stroke="rgba(34,255,85,0.14)" stroke-width="1"/>
+    </pattern>
+    <clipPath id="ecgClip"><rect x="157" y="16" width="435" height="116"/></clipPath>
+  </defs>
+  <style>
+    @keyframes ecgScroll {
+      0% { transform: translateX(0px); }
+      100% { transform: translateX(-110px); }
+    }
+    .ecg-wave { animation: ecgScroll 2.2s linear infinite; }
+  </style>
+
+  <g filter="url(#crt-s1)">
+    <!-- Outer PS1 metallic frame -->
+    <rect x="2" y="2" width="816" height="144" fill="url(#bg-s1)" stroke="#5b658a" stroke-width="3"/>
+    <rect x="5" y="5" width="810" height="138" fill="none" stroke="#9aa6cc" stroke-width="1.5"/>
+
+    <!-- Portrait Panel -->
+    <rect x="14" y="14" width="106" height="120" fill="#080b20" stroke="#7d89b0" stroke-width="2"/>
+    <rect x="15" y="15" width="104" height="23" fill="url(#hdr-s1)"/>
+    <defs><path id="pt1" d="M46.3 21h1.8v1.7h-1.8zM53.5 21h1.8v1.7h-1.8zM46.3 22.7h3.6v1.7h-3.6zM51.7 22.7h3.6v1.7h-3.6zM46.3 24.4h1.8v1.7h-1.8zM49.9 24.4h1.8v1.7h-1.8zM53.5 24.4h1.8v1.7h-1.8zM46.3 26.1h1.8v1.7h-1.8zM49.9 26.1h1.8v1.7h-1.8zM53.5 26.1h1.8v1.7h-1.8zM46.3 27.8h1.8v1.7h-1.8zM53.5 27.8h1.8v1.7h-1.8zM46.3 29.5h1.8v1.7h-1.8zM53.5 29.5h1.8v1.7h-1.8zM46.3 31.2h1.8v1.7h-1.8zM53.5 31.2h1.8v1.7h-1.8zM58.9 21h5.4v1.7h-5.4zM60.7 22.7h1.8v1.7h-1.8zM60.7 24.4h1.8v1.7h-1.8zM60.7 26.1h1.8v1.7h-1.8zM60.7 27.8h1.8v1.7h-1.8zM60.7 29.5h1.8v1.7h-1.8zM58.9 31.2h5.4v1.7h-5.4zM67.9 21h1.8v1.7h-1.8zM75.1 21h1.8v1.7h-1.8zM67.9 22.7h1.8v1.7h-1.8zM73.3 22.7h1.8v1.7h-1.8zM67.9 24.4h1.8v1.7h-1.8zM71.5 24.4h1.8v1.7h-1.8zM67.9 26.1h3.6v1.7h-3.6zM67.9 27.8h1.8v1.7h-1.8zM71.5 27.8h1.8v1.7h-1.8zM67.9 29.5h1.8v1.7h-1.8zM73.3 29.5h1.8v1.7h-1.8zM67.9 31.2h1.8v1.7h-1.8zM75.1 31.2h1.8v1.7h-1.8zM78.7 21h9v1.7h-9zM78.7 22.7h1.8v1.7h-1.8zM78.7 24.4h1.8v1.7h-1.8zM78.7 26.1h7.2v1.7h-7.2zM78.7 27.8h1.8v1.7h-1.8zM78.7 29.5h1.8v1.7h-1.8zM78.7 31.2h9v1.7h-9z"/></defs><use href="#pt1" fill="#000000" fill-opacity="0.82" x="1.17" y="1"/><use href="#pt1" fill="#f8fafc"/>
+    <g transform="translate(31, 45) scale(4.5)" shape-rendering="crispEdges">
+      <rect x="4" y="1" width="8" height="3" fill="#1e293b"/>
+      <rect x="3" y="3" width="10" height="2" fill="#0f172a"/>
+      <rect x="4" y="4" width="8" height="6" fill="#e5b895"/>
+      <rect x="5" y="6" width="2" height="1" fill="#0f172a"/>
+      <rect x="9" y="6" width="2" height="1" fill="#0f172a"/>
+      <rect x="6" y="8" width="4" height="1" fill="#b47b60"/>
+      <rect x="2" y="10" width="12" height="6" fill="#1d4ed8"/>
+      <rect x="5" y="10" width="6" height="6" fill="#334155"/>
+      <rect x="7" y="11" width="2" height="4" fill="#94a3b8"/>
+    </g>
+
+    <!-- ECG Heartbeat Panel -->
+    <rect x="130" y="14" width="464" height="120" fill="#030b06" stroke="#7d89b0" stroke-width="2"/>
+    <rect x="131" y="15" width="25" height="118" fill="url(#hdr-s1)"/>
+    <g transform="rotate(-90 144 74)">
+      <defs><path id="pt2" d="M130.4 68h8v1.5h-8zM130.4 69.5h1.6v1.5h-1.6zM130.4 71h1.6v1.5h-1.6zM130.4 72.5h6.4v1.5h-6.4zM130.4 74h1.6v1.5h-1.6zM130.4 75.5h1.6v1.5h-1.6zM130.4 77h8v1.5h-8zM141.6 68h4.8v1.5h-4.8zM140 69.5h1.6v1.5h-1.6zM146.4 69.5h1.6v1.5h-1.6zM140 71h1.6v1.5h-1.6zM140 72.5h1.6v1.5h-1.6zM140 74h1.6v1.5h-1.6zM140 75.5h1.6v1.5h-1.6zM146.4 75.5h1.6v1.5h-1.6zM141.6 77h4.8v1.5h-4.8zM151.2 68h4.8v1.5h-4.8zM149.6 69.5h1.6v1.5h-1.6zM156 69.5h1.6v1.5h-1.6zM149.6 71h1.6v1.5h-1.6zM149.6 72.5h1.6v1.5h-1.6zM152.8 72.5h4.8v1.5h-4.8zM149.6 74h1.6v1.5h-1.6zM156 74h1.6v1.5h-1.6zM149.6 75.5h1.6v1.5h-1.6zM156 75.5h1.6v1.5h-1.6zM151.2 77h6.4v1.5h-6.4z"/></defs><use href="#pt2" fill="#000000" fill-opacity="0.82" x="1.04" y="1"/><use href="#pt2" fill="#dbeafe"/>
+    </g>
+    <rect x="157" y="16" width="435" height="116" fill="url(#ecgGrid)"/>
+    <defs><path id="pt3" d="M170 24h15.5v3.7h-15.5zM170 27.7h3.1v3.7h-3.1zM170 31.4h3.1v3.7h-3.1zM170 35.1h12.4v3.7h-12.4zM170 38.8h3.1v3.7h-3.1zM170 42.5h3.1v3.7h-3.1zM170 46.2h3.1v3.7h-3.1zM194.8 24h3.1v3.7h-3.1zM191.7 31.4h6.2v3.7h-6.2zM194.8 35.1h3.1v3.7h-3.1zM194.8 38.8h3.1v3.7h-3.1zM194.8 42.5h3.1v3.7h-3.1zM191.7 46.2h9.3v3.7h-9.3zM207.2 31.4h12.4v3.7h-12.4zM207.2 35.1h3.1v3.7h-3.1zM219.6 35.1h3.1v3.7h-3.1zM207.2 38.8h3.1v3.7h-3.1zM219.6 38.8h3.1v3.7h-3.1zM207.2 42.5h3.1v3.7h-3.1zM219.6 42.5h3.1v3.7h-3.1zM207.2 46.2h3.1v3.7h-3.1zM219.6 46.2h3.1v3.7h-3.1zM228.9 31.4h9.3v3.7h-9.3zM225.8 35.1h3.1v3.7h-3.1zM238.2 35.1h3.1v3.7h-3.1zM225.8 38.8h15.5v3.7h-15.5zM225.8 42.5h3.1v3.7h-3.1zM228.9 46.2h9.3v3.7h-9.3z"/></defs><use href="#pt3" fill="#000000" fill-opacity="0.82" x="2.02" y="2.04"/><use href="#pt3" fill="#ff3b5c" fill-opacity="0.28" x="-0.7"/><use href="#pt3" fill="#38bdf8" fill-opacity="0.28" x="0.7"/><use href="#pt3" fill="#22ff55"/>
+    <defs><path id="pt4" d="M367.4 29h5.8v2h-5.8zM365.95 31h1.45v2h-1.45zM365.95 33h1.45v2h-1.45zM367.4 35h4.35v2h-4.35zM371.75 37h1.45v2h-1.45zM371.75 39h1.45v2h-1.45zM365.95 41h5.8v2h-5.8zM374.65 29h7.25v2h-7.25zM377.55 31h1.45v2h-1.45zM377.55 33h1.45v2h-1.45zM377.55 35h1.45v2h-1.45zM377.55 37h1.45v2h-1.45zM377.55 39h1.45v2h-1.45zM377.55 41h1.45v2h-1.45zM383.35 29h5.8v2h-5.8zM383.35 31h1.45v2h-1.45zM389.15 31h1.45v2h-1.45zM383.35 33h1.45v2h-1.45zM389.15 33h1.45v2h-1.45zM383.35 35h5.8v2h-5.8zM383.35 37h1.45v2h-1.45zM386.25 37h1.45v2h-1.45zM383.35 39h1.45v2h-1.45zM387.7 39h1.45v2h-1.45zM383.35 41h1.45v2h-1.45zM389.15 41h1.45v2h-1.45zM392.05 29h7.25v2h-7.25zM392.05 31h1.45v2h-1.45zM392.05 33h1.45v2h-1.45zM392.05 35h5.8v2h-5.8zM392.05 37h1.45v2h-1.45zM392.05 39h1.45v2h-1.45zM392.05 41h7.25v2h-7.25zM402.2 29h4.35v2h-4.35zM400.75 31h1.45v2h-1.45zM406.55 31h1.45v2h-1.45zM400.75 33h1.45v2h-1.45zM406.55 33h1.45v2h-1.45zM400.75 35h7.25v2h-7.25zM400.75 37h1.45v2h-1.45zM406.55 37h1.45v2h-1.45zM400.75 39h1.45v2h-1.45zM406.55 39h1.45v2h-1.45zM400.75 41h1.45v2h-1.45zM406.55 41h1.45v2h-1.45zM409.45 29h1.45v2h-1.45zM415.25 29h1.45v2h-1.45zM409.45 31h1.45v2h-1.45zM413.8 31h1.45v2h-1.45zM409.45 33h1.45v2h-1.45zM412.35 33h1.45v2h-1.45zM409.45 35h2.9v2h-2.9zM409.45 37h1.45v2h-1.45zM412.35 37h1.45v2h-1.45zM409.45 39h1.45v2h-1.45zM413.8 39h1.45v2h-1.45zM409.45 41h1.45v2h-1.45zM415.25 41h1.45v2h-1.45zM429.75 29h1.45v2h-1.45zM428.3 31h2.9v2h-2.9zM429.75 33h1.45v2h-1.45zM429.75 35h1.45v2h-1.45zM429.75 37h1.45v2h-1.45zM429.75 39h1.45v2h-1.45zM428.3 41h4.35v2h-4.35zM435.55 29h5.8v2h-5.8zM441.35 31h1.45v2h-1.45zM441.35 33h1.45v2h-1.45zM437 35h4.35v2h-4.35zM441.35 37h1.45v2h-1.45zM441.35 39h1.45v2h-1.45zM435.55 41h5.8v2h-5.8zM447.15 29h1.45v2h-1.45zM445.7 31h2.9v2h-2.9zM447.15 33h1.45v2h-1.45zM447.15 35h1.45v2h-1.45zM447.15 37h1.45v2h-1.45zM447.15 39h1.45v2h-1.45zM445.7 41h4.35v2h-4.35zM458.75 29h1.45v2h-1.45zM458.75 31h1.45v2h-1.45zM454.4 33h5.8v2h-5.8zM452.95 35h1.45v2h-1.45zM458.75 35h1.45v2h-1.45zM452.95 37h1.45v2h-1.45zM458.75 37h1.45v2h-1.45zM452.95 39h1.45v2h-1.45zM458.75 39h1.45v2h-1.45zM454.4 41h5.8v2h-5.8zM473.25 35h2.9v2h-2.9zM473.25 37h2.9v2h-2.9zM487.75 29h7.25v2h-7.25zM493.55 31h1.45v2h-1.45zM492.1 33h1.45v2h-1.45zM490.65 35h1.45v2h-1.45zM489.2 37h1.45v2h-1.45zM489.2 39h1.45v2h-1.45zM489.2 41h1.45v2h-1.45zM499.35 37h1.45v2h-1.45zM499.35 39h1.45v2h-1.45zM497.9 41h1.45v2h-1.45zM506.6 29h4.35v2h-4.35zM505.15 31h1.45v2h-1.45zM510.95 31h1.45v2h-1.45zM505.15 33h1.45v2h-1.45zM510.95 33h1.45v2h-1.45zM506.6 35h5.8v2h-5.8zM510.95 37h1.45v2h-1.45zM510.95 39h1.45v2h-1.45zM506.6 41h4.35v2h-4.35zM518.2 29h1.45v2h-1.45zM516.75 31h2.9v2h-2.9zM515.3 33h1.45v2h-1.45zM518.2 33h1.45v2h-1.45zM513.85 35h1.45v2h-1.45zM518.2 35h1.45v2h-1.45zM513.85 37h7.25v2h-7.25zM518.2 39h1.45v2h-1.45zM518.2 41h1.45v2h-1.45zM522.55 29h7.25v2h-7.25zM522.55 31h1.45v2h-1.45zM522.55 33h5.8v2h-5.8zM528.35 35h1.45v2h-1.45zM528.35 37h1.45v2h-1.45zM522.55 39h1.45v2h-1.45zM528.35 39h1.45v2h-1.45zM524 41h4.35v2h-4.35zM541.4 29h5.8v2h-5.8zM539.95 31h1.45v2h-1.45zM539.95 33h1.45v2h-1.45zM541.4 35h4.35v2h-4.35zM545.75 37h1.45v2h-1.45zM545.75 39h1.45v2h-1.45zM539.95 41h5.8v2h-5.8zM550.1 29h4.35v2h-4.35zM548.65 31h1.45v2h-1.45zM554.45 31h1.45v2h-1.45zM548.65 33h1.45v2h-1.45zM554.45 33h1.45v2h-1.45zM548.65 35h7.25v2h-7.25zM548.65 37h1.45v2h-1.45zM554.45 37h1.45v2h-1.45zM548.65 39h1.45v2h-1.45zM554.45 39h1.45v2h-1.45zM548.65 41h1.45v2h-1.45zM554.45 41h1.45v2h-1.45zM557.35 29h1.45v2h-1.45zM563.15 29h1.45v2h-1.45zM557.35 31h1.45v2h-1.45zM563.15 31h1.45v2h-1.45zM557.35 33h1.45v2h-1.45zM563.15 33h1.45v2h-1.45zM557.35 35h1.45v2h-1.45zM563.15 35h1.45v2h-1.45zM557.35 37h1.45v2h-1.45zM563.15 37h1.45v2h-1.45zM558.8 39h1.45v2h-1.45zM561.7 39h1.45v2h-1.45zM560.25 41h1.45v2h-1.45zM566.05 29h7.25v2h-7.25zM566.05 31h1.45v2h-1.45zM566.05 33h1.45v2h-1.45zM566.05 35h5.8v2h-5.8zM566.05 37h1.45v2h-1.45zM566.05 39h1.45v2h-1.45zM566.05 41h7.25v2h-7.25zM576.2 29h5.8v2h-5.8zM574.75 31h1.45v2h-1.45zM574.75 33h1.45v2h-1.45zM576.2 35h4.35v2h-4.35zM580.55 37h1.45v2h-1.45zM580.55 39h1.45v2h-1.45zM574.75 41h5.8v2h-5.8z"/></defs><use href="#pt4" fill="#000000" fill-opacity="0.82" x="1" y="1.1"/><use href="#pt4" fill="#ff3b5c" fill-opacity="0.28" x="-0.7"/><use href="#pt4" fill="#38bdf8" fill-opacity="0.28" x="0.7"/><use href="#pt4" fill="#93c5fd"/>
+
+    <g clip-path="url(#ecgClip)">
+      <g class="ecg-wave" fill="none" stroke="#22ff55" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+        <polyline points="152,97 174,97 181,89 188,97 199,97 204,108 211,61 218,114 224,97 237,97 245,85 253,97 262,97 262,97 284,97 291,89 298,97 309,97 314,108 321,61 328,114 334,97 347,97 355,85 363,97 372,97 372,97 394,97 401,89 408,97 419,97 424,108 431,61 438,114 444,97 457,97 465,85 473,97 482,97 482,97 504,97 511,89 518,97 529,97 534,108 541,61 548,114 554,97 567,97 575,85 583,97 592,97 592,97 614,97 621,89 628,97 639,97 644,108 651,61 658,114 664,97 677,97 685,85 693,97 702,97 702,97 724,97 731,89 738,97 749,97 754,108 761,61 768,114 774,97 787,97 795,85 803,97 812,97"/>
+      </g>
+    </g>
+
+    <!-- EQUIP Panel -->
+    <rect x="604" y="14" width="202" height="120" fill="#0c1133" stroke="#7d89b0" stroke-width="2"/>
+    <rect x="605" y="15" width="200" height="23" fill="url(#hdr-s1)"/>
+    <defs><path id="pt5" d="M678.9 21h9v1.7h-9zM678.9 22.7h1.8v1.7h-1.8zM678.9 24.4h1.8v1.7h-1.8zM678.9 26.1h7.2v1.7h-7.2zM678.9 27.8h1.8v1.7h-1.8zM678.9 29.5h1.8v1.7h-1.8zM678.9 31.2h9v1.7h-9zM691.5 21h5.4v1.7h-5.4zM689.7 22.7h1.8v1.7h-1.8zM696.9 22.7h1.8v1.7h-1.8zM689.7 24.4h1.8v1.7h-1.8zM696.9 24.4h1.8v1.7h-1.8zM689.7 26.1h1.8v1.7h-1.8zM696.9 26.1h1.8v1.7h-1.8zM689.7 27.8h1.8v1.7h-1.8zM693.3 27.8h1.8v1.7h-1.8zM696.9 27.8h1.8v1.7h-1.8zM689.7 29.5h1.8v1.7h-1.8zM695.1 29.5h1.8v1.7h-1.8zM691.5 31.2h3.6v1.7h-3.6zM696.9 31.2h1.8v1.7h-1.8zM700.5 21h1.8v1.7h-1.8zM707.7 21h1.8v1.7h-1.8zM700.5 22.7h1.8v1.7h-1.8zM707.7 22.7h1.8v1.7h-1.8zM700.5 24.4h1.8v1.7h-1.8zM707.7 24.4h1.8v1.7h-1.8zM700.5 26.1h1.8v1.7h-1.8zM707.7 26.1h1.8v1.7h-1.8zM700.5 27.8h1.8v1.7h-1.8zM707.7 27.8h1.8v1.7h-1.8zM700.5 29.5h1.8v1.7h-1.8zM707.7 29.5h1.8v1.7h-1.8zM702.3 31.2h5.4v1.7h-5.4zM713.1 21h5.4v1.7h-5.4zM714.9 22.7h1.8v1.7h-1.8zM714.9 24.4h1.8v1.7h-1.8zM714.9 26.1h1.8v1.7h-1.8zM714.9 27.8h1.8v1.7h-1.8zM714.9 29.5h1.8v1.7h-1.8zM713.1 31.2h5.4v1.7h-5.4zM722.1 21h7.2v1.7h-7.2zM722.1 22.7h1.8v1.7h-1.8zM729.3 22.7h1.8v1.7h-1.8zM722.1 24.4h1.8v1.7h-1.8zM729.3 24.4h1.8v1.7h-1.8zM722.1 26.1h7.2v1.7h-7.2zM722.1 27.8h1.8v1.7h-1.8zM722.1 29.5h1.8v1.7h-1.8zM722.1 31.2h1.8v1.7h-1.8z"/></defs><use href="#pt5" fill="#000000" fill-opacity="0.82" x="1.17" y="1"/><use href="#pt5" fill="#f8fafc"/>
+    <rect x="618" y="49" width="56" height="44" fill="#2563eb" stroke="#bfdbfe" stroke-width="2"/>
+    <defs><path id="pt6" d="M631.7 63h13v2.5h-13zM636.9 65.5h2.6v2.5h-2.6zM636.9 68h2.6v2.5h-2.6zM636.9 70.5h2.6v2.5h-2.6zM636.9 73h2.6v2.5h-2.6zM636.9 75.5h2.6v2.5h-2.6zM636.9 78h2.6v2.5h-2.6zM649.9 63h10.4v2.5h-10.4zM647.3 65.5h2.6v2.5h-2.6zM647.3 68h2.6v2.5h-2.6zM649.9 70.5h7.8v2.5h-7.8zM657.7 73h2.6v2.5h-2.6zM657.7 75.5h2.6v2.5h-2.6zM647.3 78h10.4v2.5h-10.4z"/></defs><use href="#pt6" fill="#000000" fill-opacity="0.82" x="1.69" y="1.38"/><use href="#pt6" fill="#ffffff"/>
+    <defs><path id="pt7" d="M684 52h8.5v2.3h-8.5zM687.4 54.3h1.7v2.3h-1.7zM687.4 56.6h1.7v2.3h-1.7zM687.4 58.9h1.7v2.3h-1.7zM687.4 61.2h1.7v2.3h-1.7zM687.4 63.5h1.7v2.3h-1.7zM687.4 65.8h1.7v2.3h-1.7zM694.2 54.3h1.7v2.3h-1.7zM701 54.3h1.7v2.3h-1.7zM694.2 56.6h1.7v2.3h-1.7zM701 56.6h1.7v2.3h-1.7zM694.2 58.9h1.7v2.3h-1.7zM701 58.9h1.7v2.3h-1.7zM695.9 61.2h6.8v2.3h-6.8zM701 63.5h1.7v2.3h-1.7zM695.9 65.8h5.1v2.3h-5.1zM704.4 54.3h6.8v2.3h-6.8zM704.4 56.6h1.7v2.3h-1.7zM711.2 56.6h1.7v2.3h-1.7zM704.4 58.9h1.7v2.3h-1.7zM711.2 58.9h1.7v2.3h-1.7zM704.4 61.2h6.8v2.3h-6.8zM704.4 63.5h1.7v2.3h-1.7zM704.4 65.8h1.7v2.3h-1.7zM716.3 56.6h5.1v2.3h-5.1zM714.6 58.9h1.7v2.3h-1.7zM721.4 58.9h1.7v2.3h-1.7zM714.6 61.2h8.5v2.3h-8.5zM714.6 63.5h1.7v2.3h-1.7zM716.3 65.8h5.1v2.3h-5.1zM726.5 52h6.8v2.3h-6.8zM724.8 54.3h1.7v2.3h-1.7zM724.8 56.6h1.7v2.3h-1.7zM726.5 58.9h5.1v2.3h-5.1zM731.6 61.2h1.7v2.3h-1.7zM731.6 63.5h1.7v2.3h-1.7zM724.8 65.8h6.8v2.3h-6.8zM736.7 56.6h5.1v2.3h-5.1zM735 58.9h1.7v2.3h-1.7zM741.8 58.9h1.7v2.3h-1.7zM735 61.2h1.7v2.3h-1.7zM735 63.5h1.7v2.3h-1.7zM741.8 63.5h1.7v2.3h-1.7zM736.7 65.8h5.1v2.3h-5.1zM745.2 56.6h1.7v2.3h-1.7zM748.6 56.6h3.4v2.3h-3.4zM745.2 58.9h3.4v2.3h-3.4zM752 58.9h1.7v2.3h-1.7zM745.2 61.2h1.7v2.3h-1.7zM745.2 63.5h1.7v2.3h-1.7zM745.2 65.8h1.7v2.3h-1.7zM758.8 52h1.7v2.3h-1.7zM757.1 56.6h3.4v2.3h-3.4zM758.8 58.9h1.7v2.3h-1.7zM758.8 61.2h1.7v2.3h-1.7zM758.8 63.5h1.7v2.3h-1.7zM757.1 65.8h5.1v2.3h-5.1zM765.6 54.3h6.8v2.3h-6.8zM765.6 56.6h1.7v2.3h-1.7zM772.4 56.6h1.7v2.3h-1.7zM765.6 58.9h1.7v2.3h-1.7zM772.4 58.9h1.7v2.3h-1.7zM765.6 61.2h6.8v2.3h-6.8zM765.6 63.5h1.7v2.3h-1.7zM765.6 65.8h1.7v2.3h-1.7zM777.5 52h1.7v2.3h-1.7zM777.5 54.3h1.7v2.3h-1.7zM775.8 56.6h5.1v2.3h-5.1zM777.5 58.9h1.7v2.3h-1.7zM777.5 61.2h1.7v2.3h-1.7zM777.5 63.5h1.7v2.3h-1.7zM782.6 63.5h1.7v2.3h-1.7zM779.2 65.8h3.4v2.3h-3.4z"/></defs><use href="#pt7" fill="#000000" fill-opacity="0.82" x="1.1" y="1.26"/><use href="#pt7" fill="#ff3b5c" fill-opacity="0.28" x="-0.7"/><use href="#pt7" fill="#38bdf8" fill-opacity="0.28" x="0.7"/><use href="#pt7" fill="#ffffff"/>
+    <defs><path id="pt8" d="M684 75h7v1.9h-7zM684 76.9h1.4v1.9h-1.4zM684 78.8h1.4v1.9h-1.4zM684 80.7h5.6v1.9h-5.6zM684 82.6h1.4v1.9h-1.4zM684 84.5h1.4v1.9h-1.4zM684 86.4h1.4v1.9h-1.4zM692.4 78.8h1.4v1.9h-1.4zM698 78.8h1.4v1.9h-1.4zM692.4 80.7h1.4v1.9h-1.4zM698 80.7h1.4v1.9h-1.4zM692.4 82.6h1.4v1.9h-1.4zM698 82.6h1.4v1.9h-1.4zM692.4 84.5h1.4v1.9h-1.4zM696.6 84.5h2.8v1.9h-2.8zM693.8 86.4h2.8v1.9h-2.8zM698 86.4h1.4v1.9h-1.4zM702.2 75h2.8v1.9h-2.8zM703.6 76.9h1.4v1.9h-1.4zM703.6 78.8h1.4v1.9h-1.4zM703.6 80.7h1.4v1.9h-1.4zM703.6 82.6h1.4v1.9h-1.4zM703.6 84.5h1.4v1.9h-1.4zM702.2 86.4h4.2v1.9h-4.2zM710.6 75h2.8v1.9h-2.8zM712 76.9h1.4v1.9h-1.4zM712 78.8h1.4v1.9h-1.4zM712 80.7h1.4v1.9h-1.4zM712 82.6h1.4v1.9h-1.4zM712 84.5h1.4v1.9h-1.4zM710.6 86.4h4.2v1.9h-4.2zM717.6 80.7h7v1.9h-7zM727.4 75h5.6v1.9h-5.6zM726 76.9h1.4v1.9h-1.4zM726 78.8h1.4v1.9h-1.4zM727.4 80.7h4.2v1.9h-4.2zM731.6 82.6h1.4v1.9h-1.4zM731.6 84.5h1.4v1.9h-1.4zM726 86.4h5.6v1.9h-5.6zM735.8 75h1.4v1.9h-1.4zM735.8 76.9h1.4v1.9h-1.4zM734.4 78.8h4.2v1.9h-4.2zM735.8 80.7h1.4v1.9h-1.4zM735.8 82.6h1.4v1.9h-1.4zM735.8 84.5h1.4v1.9h-1.4zM740 84.5h1.4v1.9h-1.4zM737.2 86.4h2.8v1.9h-2.8zM744.2 78.8h4.2v1.9h-4.2zM748.4 80.7h1.4v1.9h-1.4zM744.2 82.6h5.6v1.9h-5.6zM742.8 84.5h1.4v1.9h-1.4zM748.4 84.5h1.4v1.9h-1.4zM744.2 86.4h5.6v1.9h-5.6zM752.6 78.8h4.2v1.9h-4.2zM751.2 80.7h1.4v1.9h-1.4zM756.8 80.7h1.4v1.9h-1.4zM751.2 82.6h1.4v1.9h-1.4zM751.2 84.5h1.4v1.9h-1.4zM756.8 84.5h1.4v1.9h-1.4zM752.6 86.4h4.2v1.9h-4.2zM759.6 75h1.4v1.9h-1.4zM759.6 76.9h1.4v1.9h-1.4zM759.6 78.8h1.4v1.9h-1.4zM763.8 78.8h1.4v1.9h-1.4zM759.6 80.7h1.4v1.9h-1.4zM762.4 80.7h1.4v1.9h-1.4zM759.6 82.6h2.8v1.9h-2.8zM759.6 84.5h1.4v1.9h-1.4zM762.4 84.5h1.4v1.9h-1.4zM759.6 86.4h1.4v1.9h-1.4zM763.8 86.4h1.4v1.9h-1.4z"/></defs><use href="#pt8" fill="#000000" fill-opacity="0.82" x="1" y="1.04"/><use href="#pt8" fill="#93c5fd"/>
+    <defs><path id="pt9" d="M781.2 110.8h3.2v2.8h-3.2zM787.6 110.8h3.2v2.8h-3.2zM778 113.6h3.2v2.8h-3.2zM784.4 113.6h3.2v2.8h-3.2zM790.8 113.6h3.2v2.8h-3.2zM778 116.4h3.2v2.8h-3.2zM784.4 116.4h3.2v2.8h-3.2zM790.8 116.4h3.2v2.8h-3.2zM781.2 119.2h3.2v2.8h-3.2zM787.6 119.2h3.2v2.8h-3.2z"/></defs><use href="#pt9" fill="#000000" fill-opacity="0.82" x="2.08" y="1.54"/><use href="#pt9" fill="#4ade80"/>
+  </g>
+
+  <!-- Scanlines + CRT vignette -->
+  <rect x="2" y="2" width="816" height="144" fill="url(#scan-s1)"/>
+  <rect x="2" y="2" width="816" height="144" fill="url(#vig-s1)"/>
+</svg>
