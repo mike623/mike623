@@ -198,11 +198,11 @@ function pxText(text, x, y, opts = {}) {
 
   if (!parts.length) return "";
   const d = parts.join("");
-  if (!shadow) return `<path d="${d}" fill="${fill}"/>`;
+  if (!shadow) return `<path d="${d}" fill="${fill}" shape-rendering="crispEdges"/>`;
   const id = `pt${++pathSeq}`;
   const dx = Math.max(1, +(sx * 0.65).toFixed(2));
   const dy = Math.max(1, +(sy * 0.55).toFixed(2));
-  return `<defs><path id="${id}" d="${d}"/></defs><use href="#${id}" fill="#000000" fill-opacity="0.85" x="${dx}" y="${dy}"/><use href="#${id}" fill="${fill}"/>`;
+  return `<defs><path id="${id}" d="${d}" shape-rendering="crispEdges"/></defs><use href="#${id}" fill="#000000" fill-opacity="0.85" x="${dx}" y="${dy}"/><use href="#${id}" fill="${fill}"/>`;
 }
 
 function formatCompact(n) {
@@ -546,7 +546,7 @@ function buildStatusSvg(data) {
   }
   const polyPoints = cycles.join(" ");
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 168" width="820" height="168" role="img" aria-label="${USERNAME} PS1 Biohazard Status ECG ${data.condition}">
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 168" width="2460" height="504" role="img" aria-label="${USERNAME} PS1 Biohazard Status ECG ${data.condition}">
   ${sharedDefs("s1")}
   <defs>
     <pattern id="ecgGrid" width="12" height="12" patternUnits="userSpaceOnUse">
@@ -673,7 +673,7 @@ function buildInventorySvg(data) {
     })
     .join("");
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 406 276" width="406" height="276" role="img" aria-label="${USERNAME} PS1 Inventory 8/8">
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 406 276" width="1218" height="828" role="img" aria-label="${USERNAME} PS1 Inventory 8/8">
   ${sharedDefs("s2")}
   <g>
     <rect x="2" y="2" width="402" height="272" fill="url(#bg-s2)" stroke="#5b658a" stroke-width="3"/>
@@ -717,7 +717,7 @@ function buildFileMapSvg(data) {
     }
   });
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 406 276" width="406" height="276" role="img" aria-label="${USERNAME} PS1 Files and Sector Commit Map">
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 406 276" width="1218" height="828" role="img" aria-label="${USERNAME} PS1 Files and Sector Commit Map">
   ${sharedDefs("s3")}
   <g>
     <rect x="2" y="2" width="402" height="272" fill="url(#bg-s3)" stroke="#5b658a" stroke-width="3"/>
@@ -753,7 +753,7 @@ function buildDialogSvg(data) {
   const line1 = truncate(line1Raw, 60);
   const line2 = truncate(line2Raw, 60);
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 84" width="820" height="84" role="img" aria-label="${USERNAME} Bio Dialog">
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 84" width="2460" height="252" role="img" aria-label="${USERNAME} Bio Dialog">
   ${sharedDefs("s4")}
   <style>
     @keyframes blinkCur { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
@@ -776,7 +776,7 @@ function buildDialogSvg(data) {
 // ============================================================================
 function buildRadioBadgeSvg(item) {
   const id = `r-${item.id}`;
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 34" width="192" height="34" role="img" aria-label="Radio ${item.label}">
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 34" width="576" height="102" role="img" aria-label="Radio ${item.label}">
   ${sharedDefs(id)}
   <g>
     <rect x="1.5" y="1.5" width="189" height="31" fill="url(#hdr-${id})" stroke="#8a97c2" stroke-width="2"/>
