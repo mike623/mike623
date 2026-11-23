@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /**
- * PS1 Biohazard / Resident Evil CRT SVG Generator for GitHub Profile README
- * Zero external dependencies — renders embedded pixel-bitmap SVG paths + PS1 CRT Soft filter.
+ * Dynamic PS1 Biohazard / Resident Evil GitHub Profile Generator
+ * Generates both README.md and crisp pixel-bitmap assets/*.svg from live public GitHub data.
+ * Zero external dependencies — Node 20+ native fetch only.
  */
 
 import fs from "node:fs";
@@ -10,37 +11,54 @@ import { execSync } from "node:child_process";
 
 const USERNAME = process.env.GITHUB_USERNAME || "mike623";
 const OUT_DIR = path.resolve("assets");
+const README_PATH = path.resolve("README.md");
 
 // ============================================================================
-// Customizable Profile Config
+// Profile Links & Optional Fallback Config
 // ============================================================================
 const CONFIG = {
   portraitName: "MIKE",
-  equip: {
-    badge: "TS",
-    color: "#2563eb",
-    name: "TypeScript",
-    sub: "Full-Stack",
-    ammo: "INF",
-  },
-  dialogLine1: "\"Full-stack developer crafting fast UIs & reliable systems.",
-  dialogLine2: " Always equipped with TypeScript, Go, and a fresh Green Herb.\"",
-  // First 6 inventory slots (curated core loadout). Slots 7 & 8 are Ink Ribbon (live commits) & Green Herb.
-  inventorySlots: [
-    { name: "TypeScript", tag: "Primary", qty: "MAIN", badge: "TS", color: "#2563eb", selected: true },
-    { name: "React/Vue", tag: "Frontend", qty: "UI", badge: "UI", color: "#0891b2" },
-    { name: "Go / Node", tag: "Backend", qty: "API", badge: "GO", color: "#0284c7" },
-    { name: "Docker/K8s", tag: "Cloud Ops", qty: "OPS", badge: "K8", color: "#4f46e5" },
-    { name: "Flutter", tag: "Mobile", qty: "APP", badge: "FL", color: "#7c3aed" },
-    { name: "QA/Figma", tag: "Craft", qty: "x99", badge: "QA", color: "#db2777" },
-  ],
-  radioLinks: [
-    { id: "linkedin", label: "LINKEDIN", freq: "102.4" },
-    { id: "codepen", label: "CODEPEN", freq: "98.7" },
-    { id: "leetcode", label: "LEETCODE", freq: "88.1" },
-    { id: "web", label: "NAMIKE.ME", freq: "77.0" },
+  fallbackBio: "Full-stack developer building fast UIs & reliable systems",
+  // Static social channels not exposed on GitHub's profile API; websiteUrl is auto-synced from GitHub
+  socialRadioLinks: [
+    { id: "linkedin", label: "LINKEDIN", freq: "102.4", url: "https://linkedin.com/in/mike-wong-namike" },
+    { id: "codepen", label: "CODEPEN", freq: "98.7", url: "https://codepen.io/mike623" },
+    { id: "leetcode", label: "LEETCODE", freq: "88.1", url: "https://www.leetcode.com/mike623" },
   ],
 };
+
+// High-contrast PS1 badge colors & 2-letter codes for common GitHub languages
+const LANG_META = {
+  JavaScript: { badge: "JS", color: "#ca8a04" },
+  TypeScript: { badge: "TS", color: "#2563eb" },
+  Python: { badge: "PY", color: "#0284c7" },
+  Go: { badge: "GO", color: "#0891b2" },
+  Rust: { badge: "RS", color: "#b45309" },
+  Dart: { badge: "DT", color: "#0369a1" },
+  HTML: { badge: "HT", color: "#ea580c" },
+  CSS: { badge: "CS", color: "#7c3aed" },
+  SCSS: { badge: "SC", color: "#be185d" },
+  Vue: { badge: "VU", color: "#059669" },
+  Svelte: { badge: "SV", color: "#dc2626" },
+  Swift: { badge: "SW", color: "#c2410c" },
+  Kotlin: { badge: "KT", color: "#7c3aed" },
+  Java: { badge: "JV", color: "#b45309" },
+  "C#": { badge: "C#", color: "#15803d" },
+  "C++": { badge: "C+", color: "#4338ca" },
+  C: { badge: "C ", color: "#475569" },
+  Ruby: { badge: "RB", color: "#be123c" },
+  PHP: { badge: "PH", color: "#4f46e5" },
+  Shell: { badge: "SH", color: "#475569" },
+  Perl: { badge: "PL", color: "#4f46e5" },
+  GDScript: { badge: "GD", color: "#0284c7" },
+  Astro: { badge: "AS", color: "#7c3aed" },
+};
+
+function getLangMeta(name) {
+  if (LANG_META[name]) return LANG_META[name];
+  const clean = (name || "CODE").replace(/[^A-Za-z0-9#+]/g, "").toUpperCase();
+  return { badge: (clean.slice(0, 2) || "??"), color: "#4f46e5" };
+}
 
 // ============================================================================
 // Crisp 5x7 Bitmap Pixel Font (Zero external fonts — 100% consistent on GitHub)
@@ -140,10 +158,6 @@ function measurePixelText(text, sx = 2, gap = 1) {
 
 let pathSeq = 0;
 
-/**
- * Renders crisp merged pixel bitmap rectangles as a single reusable SVG <path>.
- * Uses <use href="#..."/> for shadow & PS1 RGB chroma so SVGs stay compact.
- */
 function pxText(text, x, y, opts = {}) {
   const {
     sx = 2,
@@ -152,7 +166,6 @@ function pxText(text, x, y, opts = {}) {
     fill = "#f8fafc",
     align = "left",
     shadow = true,
-    chroma = false,
   } = opts;
 
   const w = measurePixelText(text, sx, gap);
@@ -185,18 +198,11 @@ function pxText(text, x, y, opts = {}) {
 
   if (!parts.length) return "";
   const d = parts.join("");
-  if (!shadow && !chroma) {
-    return `<path d="${d}" fill="${fill}"/>`;
-  }
+  if (!shadow) return `<path d="${d}" fill="${fill}"/>`;
   const id = `pt${++pathSeq}`;
-  let out = `<defs><path id="${id}" d="${d}"/></defs>`;
-  if (shadow) {
-    const dx = Math.max(1, +(sx * 0.65).toFixed(2));
-    const dy = Math.max(1, +(sy * 0.55).toFixed(2));
-    out += `<use href="#${id}" fill="#000000" fill-opacity="0.85" x="${dx}" y="${dy}"/>`;
-  }
-  out += `<use href="#${id}" fill="${fill}"/>`;
-  return out;
+  const dx = Math.max(1, +(sx * 0.65).toFixed(2));
+  const dy = Math.max(1, +(sy * 0.55).toFixed(2));
+  return `<defs><path id="${id}" d="${d}"/></defs><use href="#${id}" fill="#000000" fill-opacity="0.85" x="${dx}" y="${dy}"/><use href="#${id}" fill="${fill}"/>`;
 }
 
 function formatCompact(n) {
@@ -214,8 +220,27 @@ function truncate(str, max) {
   return str.length > max ? `${str.slice(0, max - 2)}..` : str;
 }
 
+function cleanBio(rawBio) {
+  if (!rawBio) return "";
+  return rawBio
+    .replace(/<\/?[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function normalizeUrl(raw) {
+  if (!raw) return "";
+  const trimmed = raw.trim();
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  return `https://${trimmed}`;
+}
+
+function escapeMdCell(str) {
+  return (str || "—").replace(/\|/g, "\\|").replace(/\r?\n/g, " ").trim();
+}
+
 // ============================================================================
-// GitHub Public GraphQL Fetcher
+// GitHub Public GraphQL Fetcher (strictly privacy: PUBLIC)
 // ============================================================================
 function resolveToken() {
   if (process.env.GITHUB_TOKEN) return process.env.GITHUB_TOKEN.trim();
@@ -237,19 +262,31 @@ async function fetchGitHubData() {
   const query = `
     query($login: String!) {
       user(login: $login) {
-        pinnedItems(first: 3, types: REPOSITORY) {
+        bio
+        location
+        websiteUrl
+        followers { totalCount }
+        pinnedItems(first: 6, types: REPOSITORY) {
           nodes {
             ... on Repository {
               name
+              url
+              description
               isPrivate
+              stargazerCount
+              pushedAt
               primaryLanguage { name }
             }
           }
         }
-        repositories(first: 15, ownerAffiliations: OWNER, privacy: PUBLIC, isFork: false, orderBy: {field: PUSHED_AT, direction: DESC}) {
+        repositories(first: 100, ownerAffiliations: OWNER, privacy: PUBLIC, isFork: false, orderBy: {field: PUSHED_AT, direction: DESC}) {
           totalCount
           nodes {
             name
+            url
+            description
+            stargazerCount
+            pushedAt
             primaryLanguage { name }
           }
         }
@@ -291,7 +328,6 @@ async function fetchGitHubData() {
   const cal = user.contributionsCollection.contributionCalendar;
   const allDays = cal.weeks.flatMap((w) => w.contributionDays);
 
-  // Compute current streak & days since last commit
   let daysSinceLast = 999;
   for (let i = allDays.length - 1; i >= 0; i--) {
     if (allDays[i].contributionCount > 0) {
@@ -321,27 +357,57 @@ async function fetchGitHubData() {
     }
   }
 
-  // Condition mapping based on recent commit activity
   let condition = "Fine";
   if (daysSinceLast > 10) condition = "Danger";
   else if (daysSinceLast > 3) condition = "Caution";
 
-  // Pick 3 public pinned repos, or fall back to 3 most recently pushed public repos (excluding profile repo)
+  const publicNodes = (user.repositories?.nodes || []).filter((r) => r && r.name !== USERNAME);
+
+  // Rank languages by public repo count (accurate reflection of stack, immune to vendored code bloat)
+  const langCounts = {};
+  let totalLangRepos = 0;
+  for (const r of publicNodes) {
+    const lang = r.primaryLanguage?.name;
+    if (!lang) continue;
+    langCounts[lang] = (langCounts[lang] || 0) + 1;
+    totalLangRepos++;
+  }
+  const topLanguages = Object.entries(langCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 6)
+    .map(([name, count]) => ({
+      name,
+      count,
+      pct: totalLangRepos ? Math.max(1, Math.round((count / totalLangRepos) * 100)) : 0,
+      ...getLangMeta(name),
+    }));
+
+  // Pick up to 5 public pinned repos, filling remaining slots with most recently pushed public repos
   const pinnedPublic = (user.pinnedItems?.nodes || []).filter((r) => r && !r.isPrivate && r.name !== USERNAME);
-  const recentPublic = (user.repositories?.nodes || []).filter((r) => r && r.name !== USERNAME);
   const seen = new Set();
   const featuredRepos = [];
-  for (const r of [...pinnedPublic, ...recentPublic]) {
+  for (const r of [...pinnedPublic, ...publicNodes]) {
     if (seen.has(r.name)) continue;
     seen.add(r.name);
     featuredRepos.push({
       name: r.name,
+      url: r.url,
+      description: r.description || "",
       lang: r.primaryLanguage?.name || "Code",
+      stars: r.stargazerCount || 0,
+      pushedAt: (r.pushedAt || "").slice(0, 10),
     });
-    if (featuredRepos.length >= 3) break;
+    if (featuredRepos.length >= 5) break;
   }
 
-  // Last 26 weeks for MAP heatmap
+  const latestRepo = publicNodes[0]
+    ? {
+        name: publicNodes[0].name,
+        lang: publicNodes[0].primaryLanguage?.name || "Code",
+        pushedAt: (publicNodes[0].pushedAt || "").slice(0, 10),
+      }
+    : null;
+
   const mapWeeks = cal.weeks.slice(-26).map((w) =>
     w.contributionDays.map((d) => {
       switch (d.contributionLevel) {
@@ -354,15 +420,39 @@ async function fetchGitHubData() {
     })
   );
 
+  // Build radio links (social links + dynamic websiteUrl from GitHub profile)
+  const radioLinks = [...CONFIG.socialRadioLinks];
+  const websiteUrl = normalizeUrl(user.websiteUrl);
+  if (websiteUrl) {
+    const hostLabel = websiteUrl.replace(/^https?:\/\//i, "").replace(/\/.*$/, "").toUpperCase();
+    radioLinks.push({
+      id: "web",
+      label: truncate(hostLabel, 10),
+      freq: "77.0",
+      url: websiteUrl,
+    });
+  }
+
+  const bioText = cleanBio(user.bio) || CONFIG.fallbackBio;
+  const location = (user.location || "").trim();
+
   return {
+    bioText,
+    location,
+    websiteUrl,
+    followers: user.followers?.totalCount || 0,
     totalContributions: cal.totalContributions,
     currentStreak,
     longestStreak,
     daysSinceLast,
     condition,
     publicRepos: user.repositories.totalCount,
+    topLanguages,
     featuredRepos,
+    latestRepo,
     mapWeeks,
+    radioLinks,
+    updatedDate: new Date().toISOString().slice(0, 10),
   };
 }
 
@@ -374,25 +464,43 @@ function getFallbackData() {
     })
   );
   return {
+    bioText: CONFIG.fallbackBio,
+    location: "HK",
+    websiteUrl: "https://namike.me",
+    followers: 27,
     totalContributions: 1248,
     currentStreak: 42,
     longestStreak: 42,
     daysSinceLast: 0,
     condition: "Fine",
     publicRepos: 68,
-    featuredRepos: [
-      { name: "dclt-badminton-ics", lang: "Python" },
-      { name: "scottish-tartan-finder", lang: "HTML" },
-      { name: "kanagawa-orca-theme", lang: "Python" },
+    topLanguages: [
+      { name: "JavaScript", count: 22, pct: 41, ...getLangMeta("JavaScript") },
+      { name: "TypeScript", count: 9, pct: 17, ...getLangMeta("TypeScript") },
+      { name: "HTML", count: 7, pct: 13, ...getLangMeta("HTML") },
+      { name: "Python", count: 6, pct: 11, ...getLangMeta("Python") },
+      { name: "Dart", count: 3, pct: 6, ...getLangMeta("Dart") },
+      { name: "Rust", count: 2, pct: 4, ...getLangMeta("Rust") },
     ],
+    featuredRepos: [
+      { name: "dclt-badminton-ics", url: `https://github.com/${USERNAME}/dclt-badminton-ics`, description: "", lang: "Python", stars: 1, pushedAt: "2026-11-23" },
+      { name: "scottish-tartan-finder", url: `https://github.com/${USERNAME}/scottish-tartan-finder`, description: "Static Scottish tartan finder concept", lang: "HTML", stars: 0, pushedAt: "2026-11-23" },
+      { name: "kanagawa-orca-theme", url: `https://github.com/${USERNAME}/kanagawa-orca-theme`, description: "Kanagawa themes for Orca", lang: "Python", stars: 0, pushedAt: "2026-11-17" },
+    ],
+    latestRepo: { name: "dclt-badminton-ics", lang: "Python", pushedAt: "2026-11-23" },
     mapWeeks,
+    radioLinks: [
+      ...CONFIG.socialRadioLinks,
+      { id: "web", label: "NAMIKE.ME", freq: "77.0", url: "https://namike.me" },
+    ],
+    updatedDate: new Date().toISOString().slice(0, 10),
   };
 }
 
 // ============================================================================
-// Shared PS1 Gradient Defs (Crisp pixel art — CRT effects disabled)
+// Shared PS1 Gradient Defs (Crisp pixel art)
 // ============================================================================
-function sharedCrtDefs(idSuffix) {
+function sharedDefs(idSuffix) {
   return `
   <defs>
     <linearGradient id="bg-${idSuffix}" x1="0" y1="0" x2="0" y2="1">
@@ -408,7 +516,7 @@ function sharedCrtDefs(idSuffix) {
 }
 
 // ============================================================================
-// 1. TOP STATUS + ANIMATED ECG + EQUIP SVG (820 x 168)
+// 1. TOP STATUS + ANIMATED ECG + DYNAMIC EQUIP SVG (820 x 168)
 // ============================================================================
 function buildStatusSvg(data) {
   const ecgTheme = {
@@ -422,7 +530,13 @@ function buildStatusSvg(data) {
       ? `${data.currentStreak}d STREAK · ${formatCompact(data.totalContributions)} SAVES`
       : `BEST ${data.longestStreak}d · ${formatCompact(data.totalContributions)} SAVES`;
 
-  // Repeat 6 heartbeat cycles so CSS translation loops seamlessly (-110px)
+  const topLang = data.topLanguages[0] || {
+    name: "TypeScript",
+    count: 10,
+    pct: 100,
+    ...getLangMeta("TypeScript"),
+  };
+
   const cycles = [];
   for (let k = 0; k < 6; k++) {
     const o = 152 + k * 110;
@@ -432,8 +546,8 @@ function buildStatusSvg(data) {
   }
   const polyPoints = cycles.join(" ");
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 168" width="820" height="168" role="img" aria-label="MIKE623 PS1 Biohazard Status ECG ${data.condition}">
-  ${sharedCrtDefs("s1")}
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 168" width="820" height="168" role="img" aria-label="${USERNAME} PS1 Biohazard Status ECG ${data.condition}">
+  ${sharedDefs("s1")}
   <defs>
     <pattern id="ecgGrid" width="12" height="12" patternUnits="userSpaceOnUse">
       <path d="M 12 0 L 0 0 0 12" fill="none" stroke="${ecgTheme.grid}" stroke-width="1"/>
@@ -449,7 +563,6 @@ function buildStatusSvg(data) {
   </style>
 
   <g>
-    <!-- Outer PS1 metallic frame -->
     <rect x="2" y="2" width="816" height="164" fill="url(#bg-s1)" stroke="#5b658a" stroke-width="3"/>
     <rect x="5" y="5" width="810" height="158" fill="none" stroke="#9aa6cc" stroke-width="1.5"/>
 
@@ -476,36 +589,55 @@ function buildStatusSvg(data) {
       ${pxText("ECG", 150, 77, { sx: 1.9, sy: 1.8, fill: "#dbeafe", align: "center" })}
     </g>
     <rect x="163" y="16" width="417" height="136" fill="url(#ecgGrid)"/>
-    ${pxText(data.condition, 176, 25, { sx: 3.5, sy: 4.1, fill: ecgTheme.color, chroma: true })}
-    ${pxText(streakLabel, 570, 31, { sx: 1.7, sy: 2.3, fill: "#93c5fd", align: "right", chroma: true })}
+    ${pxText(data.condition, 176, 25, { sx: 3.5, sy: 4.1, fill: ecgTheme.color })}
+    ${pxText(streakLabel, 570, 31, { sx: 1.7, sy: 2.3, fill: "#93c5fd", align: "right" })}
 
     <g clip-path="url(#ecgClip)">
-      <!-- Pure-vector soft phosphor halo + crisp core heartbeat -->
       <g class="ecg-wave" fill="none" stroke-linejoin="round" stroke-linecap="round">
         <polyline points="${polyPoints}" stroke="${ecgTheme.color}" stroke-width="7.5" stroke-opacity="0.22"/>
         <polyline points="${polyPoints}" stroke="${ecgTheme.color}" stroke-width="3.2"/>
       </g>
     </g>
 
-    <!-- EQUIP Panel -->
+    <!-- Dynamic EQUIP Panel (auto-equips #1 public language) -->
     <rect x="592" y="14" width="214" height="140" fill="#0c1133" stroke="#7d89b0" stroke-width="2"/>
     <rect x="593" y="15" width="212" height="27" fill="url(#hdr-s1)"/>
     ${pxText("EQUIP", 699, 21, { sx: 2.1, sy: 2.1, fill: "#f8fafc", align: "center" })}
-    <rect x="606" y="56" width="58" height="46" fill="${CONFIG.equip.color}" stroke="#bfdbfe" stroke-width="2"/>
-    ${pxText(CONFIG.equip.badge, 635, 70, { sx: 2.8, sy: 2.7, fill: "#ffffff", align: "center" })}
-    ${pxText(CONFIG.equip.name, 674, 58, { sx: 2.0, sy: 2.6, fill: "#ffffff" })}
-    ${pxText(CONFIG.equip.sub, 674, 84, { sx: 1.65, sy: 2.1, fill: "#93c5fd" })}
+    <rect x="606" y="56" width="58" height="46" fill="${topLang.color}" stroke="#bfdbfe" stroke-width="2"/>
+    ${pxText(topLang.badge, 635, 70, { sx: 2.8, sy: 2.7, fill: "#ffffff", align: "center" })}
+    ${pxText(truncate(topLang.name, 10), 674, 58, { sx: 2.0, sy: 2.6, fill: "#ffffff" })}
+    ${pxText(`${topLang.count} REPOS`, 674, 84, { sx: 1.65, sy: 2.1, fill: "#93c5fd" })}
     ${pxText("∞", 796, 121, { sx: 3.6, sy: 3.2, fill: "#4ade80", align: "right" })}
   </g>
 </svg>`;
 }
 
 // ============================================================================
-// 2. INVENTORY 2x4 CARD SVG (406 x 276)
+// 2. DYNAMIC INVENTORY 2x4 CARD SVG (406 x 276)
 // ============================================================================
 function buildInventorySvg(data) {
+  const dynamicSlots = data.topLanguages.slice(0, 6).map((lang, idx) => ({
+    name: truncate(lang.name, 10),
+    tag: `${lang.count} ${lang.count === 1 ? "repo" : "repos"}`,
+    qty: `${lang.pct}%`,
+    badge: lang.badge,
+    color: lang.color,
+    selected: idx === 0,
+  }));
+
+  while (dynamicSlots.length < 6) {
+    dynamicSlots.push({
+      name: "Empty",
+      tag: "Slot",
+      qty: "--",
+      badge: "--",
+      color: "#334155",
+      selected: false,
+    });
+  }
+
   const slots = [
-    ...CONFIG.inventorySlots,
+    ...dynamicSlots,
     {
       name: "Ink Ribbon",
       tag: "Git Saves",
@@ -515,8 +647,8 @@ function buildInventorySvg(data) {
     },
     {
       name: "Green Herb",
-      tag: "Focus",
-      qty: "x3",
+      tag: "Streak",
+      qty: data.currentStreak > 0 ? `${data.currentStreak}d` : "x3",
       badge: "++",
       color: "#16a34a",
     },
@@ -535,14 +667,14 @@ function buildInventorySvg(data) {
       <rect x="${x}" y="${y}" width="188" height="50" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>
       <rect x="${x + 7}" y="${y + 9}" width="32" height="32" fill="${slot.color}" stroke="#e2e8f0" stroke-width="1.5"/>
       ${pxText(slot.badge, x + 23, y + 19, { sx: 1.7, sy: 1.7, fill: "#ffffff", align: "center" })}
-      ${pxText(slot.name, x + 46, y + 10, { sx: 1.45, sy: 2.0, fill: "#f8fafc", chroma: true })}
+      ${pxText(slot.name, x + 46, y + 10, { sx: 1.45, sy: 2.0, fill: "#f8fafc" })}
       ${pxText(slot.tag, x + 46, y + 30, { sx: 1.15, sy: 1.55, fill: "#93c5fd" })}
       ${pxText(slot.qty, x + 181, y + 34, { sx: 1.35, sy: 1.5, fill: "#4ade80", align: "right" })}`;
     })
     .join("");
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 406 276" width="406" height="276" role="img" aria-label="MIKE623 PS1 Inventory 8/8">
-  ${sharedCrtDefs("s2")}
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 406 276" width="406" height="276" role="img" aria-label="${USERNAME} PS1 Inventory 8/8">
+  ${sharedDefs("s2")}
   <g>
     <rect x="2" y="2" width="402" height="272" fill="url(#bg-s2)" stroke="#5b658a" stroke-width="3"/>
     <rect x="5" y="5" width="396" height="266" fill="none" stroke="#9aa6cc" stroke-width="1.3"/>
@@ -568,7 +700,7 @@ function buildFileMapSvg(data) {
       return `
       <rect x="12" y="${y}" width="382" height="28" fill="#141a47" stroke="#3f4a87" stroke-width="1.5"/>
       ${pxText(num, 20, y + 7, { sx: 1.4, sy: 1.9, fill: "#fde047" })}
-      ${pxText(nameStr, 50, y + 7, { sx: 1.45, sy: 1.95, fill: "#f8fafc", chroma: true })}
+      ${pxText(nameStr, 50, y + 7, { sx: 1.45, sy: 1.95, fill: "#f8fafc" })}
       ${pxText(langStr, 386, y + 9, { sx: 1.25, sy: 1.5, fill: "#4ade80", align: "right" })}`;
     })
     .join("");
@@ -585,8 +717,8 @@ function buildFileMapSvg(data) {
     }
   });
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 406 276" width="406" height="276" role="img" aria-label="MIKE623 PS1 Files and Sector Commit Map">
-  ${sharedCrtDefs("s3")}
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 406 276" width="406" height="276" role="img" aria-label="${USERNAME} PS1 Files and Sector Commit Map">
+  ${sharedDefs("s3")}
   <g>
     <rect x="2" y="2" width="402" height="272" fill="url(#bg-s3)" stroke="#5b658a" stroke-width="3"/>
     <rect x="5" y="5" width="396" height="266" fill="none" stroke="#9aa6cc" stroke-width="1.3"/>
@@ -609,11 +741,20 @@ function buildFileMapSvg(data) {
 }
 
 // ============================================================================
-// 4. BOTTOM TYPEWRITER DIALOG BOX SVG (820 x 84)
+// 4. DYNAMIC BOTTOM TYPEWRITER DIALOG BOX SVG (820 x 84)
 // ============================================================================
-function buildDialogSvg() {
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 84" width="820" height="84" role="img" aria-label="MIKE623 Bio Dialog">
-  ${sharedCrtDefs("s4")}
+function buildDialogSvg(data) {
+  const locPart = data.location ? ` · ${data.location}` : "";
+  const line1Raw = `"${data.bioText}${locPart} · ${data.publicRepos} public files.`;
+  const line2Raw = data.latestRepo
+    ? ` Last save: ${data.latestRepo.name} (${data.latestRepo.lang}) · ${data.latestRepo.pushedAt}."`
+    : ` Ready for the next save room · ${data.updatedDate}."`;
+
+  const line1 = truncate(line1Raw, 60);
+  const line2 = truncate(line2Raw, 60);
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 84" width="820" height="84" role="img" aria-label="${USERNAME} Bio Dialog">
+  ${sharedDefs("s4")}
   <style>
     @keyframes blinkCur { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
     .cur { animation: blinkCur 1s steps(1, end) infinite; }
@@ -621,8 +762,8 @@ function buildDialogSvg() {
   <g>
     <rect x="2" y="2" width="816" height="80" fill="#080b1f" stroke="#5b658a" stroke-width="3"/>
     <rect x="5" y="5" width="810" height="74" fill="none" stroke="#9aa6cc" stroke-width="1.5"/>
-    ${pxText(CONFIG.dialogLine1, 22, 18, { sx: 2.0, sy: 2.7, fill: "#f8fafc" })}
-    ${pxText(CONFIG.dialogLine2, 22, 48, { sx: 2.0, sy: 2.7, fill: "#cbd5e1" })}
+    ${pxText(line1, 22, 18, { sx: 2.0, sy: 2.7, fill: "#f8fafc" })}
+    ${pxText(line2, 22, 48, { sx: 2.0, sy: 2.7, fill: "#cbd5e1" })}
     <g class="cur">
       ${pxText("▼", 796, 51, { sx: 2.6, sy: 2.6, fill: "#fde047", align: "right" })}
     </g>
@@ -631,12 +772,12 @@ function buildDialogSvg() {
 }
 
 // ============================================================================
-// 5. CLICKABLE PS1 RADIO BADGE SVGS (192 x 34 each — wrap naturally on mobile)
+// 5. CLICKABLE PS1 RADIO BADGE SVGS (192 x 34 each)
 // ============================================================================
 function buildRadioBadgeSvg(item) {
   const id = `r-${item.id}`;
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 34" width="192" height="34" role="img" aria-label="Radio ${item.label}">
-  ${sharedCrtDefs(id)}
+  ${sharedDefs(id)}
   <g>
     <rect x="1.5" y="1.5" width="189" height="31" fill="url(#hdr-${id})" stroke="#8a97c2" stroke-width="2"/>
     <rect x="3" y="3" width="186" height="28" fill="none" stroke="#1b213b" stroke-width="1.2"/>
@@ -645,6 +786,66 @@ function buildRadioBadgeSvg(item) {
     ${pxText(item.freq, 182, 12, { sx: 1.25, sy: 1.5, fill: "#fde047", align: "right" })}
   </g>
 </svg>`;
+}
+
+// ============================================================================
+// 6. DYNAMIC README.md GENERATOR
+// ============================================================================
+function buildReadmeMarkdown(data) {
+  const dialogHref = data.websiteUrl || `https://github.com/${USERNAME}`;
+  const radioHtml = data.radioLinks
+    .map(
+      (r) =>
+        `  <a href="${r.url}" target="_blank">\n    <img src="./assets/radio-${r.id}.svg" width="192" alt="RADIO // ${r.label}" />\n  </a>`
+    )
+    .join("\n");
+
+  const repoRows = data.featuredRepos
+    .map((repo, idx) => {
+      const num = `0${idx + 1}`;
+      const desc = escapeMdCell(truncate(repo.description, 72));
+      return `| \`${num}\` | [**${repo.name}**](${repo.url}) | \`${repo.lang}\` | ${repo.stars} | \`${repo.pushedAt}\` | ${desc} |`;
+    })
+    .join("\n");
+
+  return `<!-- AUTO-GENERATED by scripts/generate-readme-svgs.mjs — edit the generator, not this file directly -->
+
+<p align="center">
+  <a href="https://github.com/${USERNAME}">
+    <img src="./assets/status-ecg.svg" width="820" alt="${USERNAME} PS1 Biohazard Status — ${data.condition} · ${data.currentStreak}d streak · ${formatComma(data.totalContributions)} saves" />
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/${USERNAME}?tab=repositories">
+    <img src="./assets/inventory.svg" width="406" alt="ITEM // Dynamic Inventory 8/8" />
+  </a>
+  <a href="https://github.com/${USERNAME}?tab=repositories">
+    <img src="./assets/file-map.svg" width="406" alt="FILE // ${data.publicRepos} Public Repos & MAP // ${formatComma(data.totalContributions)} Sector Commits" />
+  </a>
+</p>
+
+<p align="center">
+  <a href="${dialogHref}">
+    <img src="./assets/dialog.svg" width="820" alt="${USERNAME} Bio Dialog" />
+  </a>
+</p>
+
+<p align="center">
+${radioHtml}
+</p>
+
+<details>
+  <summary>📁 <strong>FILE // PUBLIC REPO ARCHIVE (${data.publicRepos} total · last save ${data.updatedDate})</strong></summary>
+
+<br/>
+
+| # | File | Lang | ★ | Saved | Notes |
+| :-: | :--- | :-: | :-: | :-: | :--- |
+${repoRows}
+
+</details>
+`;
 }
 
 // ============================================================================
@@ -657,14 +858,16 @@ async function main() {
   fs.writeFileSync(path.join(OUT_DIR, "status-ecg.svg"), buildStatusSvg(data), "utf8");
   fs.writeFileSync(path.join(OUT_DIR, "inventory.svg"), buildInventorySvg(data), "utf8");
   fs.writeFileSync(path.join(OUT_DIR, "file-map.svg"), buildFileMapSvg(data), "utf8");
-  fs.writeFileSync(path.join(OUT_DIR, "dialog.svg"), buildDialogSvg(), "utf8");
+  fs.writeFileSync(path.join(OUT_DIR, "dialog.svg"), buildDialogSvg(data), "utf8");
 
-  for (const r of CONFIG.radioLinks) {
+  for (const r of data.radioLinks) {
     fs.writeFileSync(path.join(OUT_DIR, `radio-${r.id}.svg`), buildRadioBadgeSvg(r), "utf8");
   }
 
+  fs.writeFileSync(README_PATH, buildReadmeMarkdown(data), "utf8");
+
   console.log(
-    `Generated PS1 Biohazard SVGs for ${USERNAME}: condition=${data.condition}, saves=${data.totalContributions}, streak=${data.currentStreak}d, publicRepos=${data.publicRepos}`
+    `Generated dynamic README.md + PS1 Biohazard SVGs for ${USERNAME}: condition=${data.condition}, equip=${data.topLanguages[0]?.name || "n/a"}, saves=${data.totalContributions}, streak=${data.currentStreak}d, publicRepos=${data.publicRepos}`
   );
 }
 
