@@ -193,11 +193,7 @@ function pxText(text, x, y, opts = {}) {
   if (shadow) {
     const dx = Math.max(1, +(sx * 0.65).toFixed(2));
     const dy = Math.max(1, +(sy * 0.55).toFixed(2));
-    out += `<use href="#${id}" fill="#000000" fill-opacity="0.82" x="${dx}" y="${dy}"/>`;
-  }
-  if (chroma) {
-    out += `<use href="#${id}" fill="#ff3b5c" fill-opacity="0.28" x="-0.7"/>`;
-    out += `<use href="#${id}" fill="#38bdf8" fill-opacity="0.28" x="0.7"/>`;
+    out += `<use href="#${id}" fill="#000000" fill-opacity="0.85" x="${dx}" y="${dy}"/>`;
   }
   out += `<use href="#${id}" fill="${fill}"/>`;
   return out;
@@ -394,7 +390,7 @@ function getFallbackData() {
 }
 
 // ============================================================================
-// Shared PS1 CRT Soft Defs (Filter + Scanlines + Vignette)
+// Shared PS1 Gradient Defs (Crisp pixel art — CRT effects disabled)
 // ============================================================================
 function sharedCrtDefs(idSuffix) {
   return `
@@ -408,27 +404,11 @@ function sharedCrtDefs(idSuffix) {
       <stop offset="0%" stop-color="#68749e"/>
       <stop offset="100%" stop-color="#37405e"/>
     </linearGradient>
-    <radialGradient id="vig-${idSuffix}" cx="50%" cy="50%" r="68%">
-      <stop offset="62%" stop-color="#000000" stop-opacity="0"/>
-      <stop offset="100%" stop-color="#000000" stop-opacity="0.46"/>
-    </radialGradient>
-    <pattern id="scan-${idSuffix}" width="4" height="4" patternUnits="userSpaceOnUse">
-      <rect width="4" height="2" fill="rgba(0,0,0,0)"/>
-      <rect y="2" width="4" height="2" fill="rgba(0,0,0,0.23)"/>
-    </pattern>
-    <filter id="crt-${idSuffix}" x="-2%" y="-2%" width="104%" height="104%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="0.56" result="soft"/>
-      <feComponentTransfer in="soft">
-        <feFuncR type="linear" slope="1.05"/>
-        <feFuncG type="linear" slope="1.06"/>
-        <feFuncB type="linear" slope="1.08"/>
-      </feComponentTransfer>
-    </filter>
   </defs>`;
 }
 
 // ============================================================================
-// 1. TOP STATUS + ANIMATED ECG + EQUIP SVG (820 x 148)
+// 1. TOP STATUS + ANIMATED ECG + EQUIP SVG (820 x 168)
 // ============================================================================
 function buildStatusSvg(data) {
   const ecgTheme = {
@@ -439,25 +419,26 @@ function buildStatusSvg(data) {
 
   const streakLabel =
     data.currentStreak > 0
-      ? `STREAK ${data.currentStreak}d · ${formatComma(data.totalContributions)} SAVES`
-      : `BEST ${data.longestStreak}d · ${formatComma(data.totalContributions)} SAVES`;
+      ? `${data.currentStreak}d STREAK · ${formatCompact(data.totalContributions)} SAVES`
+      : `BEST ${data.longestStreak}d · ${formatCompact(data.totalContributions)} SAVES`;
 
-  // Repeat 5 heartbeat cycles so CSS translation loops seamlessly (-110px)
+  // Repeat 6 heartbeat cycles so CSS translation loops seamlessly (-110px)
   const cycles = [];
   for (let k = 0; k < 6; k++) {
     const o = 152 + k * 110;
     cycles.push(
-      `${o},97 ${o + 22},97 ${o + 29},89 ${o + 36},97 ${o + 47},97 ${o + 52},108 ${o + 59},61 ${o + 66},114 ${o + 72},97 ${o + 85},97 ${o + 93},85 ${o + 101},97 ${o + 110},97`
+      `${o},112 ${o + 22},112 ${o + 29},103 ${o + 36},112 ${o + 47},112 ${o + 52},125 ${o + 59},70 ${o + 66},132 ${o + 72},112 ${o + 85},112 ${o + 93},98 ${o + 101},112 ${o + 110},112`
     );
   }
+  const polyPoints = cycles.join(" ");
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 148" width="820" height="148" role="img" aria-label="MIKE623 PS1 Biohazard Status ECG ${data.condition}">
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 168" width="820" height="168" role="img" aria-label="MIKE623 PS1 Biohazard Status ECG ${data.condition}">
   ${sharedCrtDefs("s1")}
   <defs>
     <pattern id="ecgGrid" width="12" height="12" patternUnits="userSpaceOnUse">
       <path d="M 12 0 L 0 0 0 12" fill="none" stroke="${ecgTheme.grid}" stroke-width="1"/>
     </pattern>
-    <clipPath id="ecgClip"><rect x="157" y="16" width="435" height="116"/></clipPath>
+    <clipPath id="ecgClip"><rect x="163" y="16" width="417" height="136"/></clipPath>
   </defs>
   <style>
     @keyframes ecgScroll {
@@ -467,16 +448,16 @@ function buildStatusSvg(data) {
     .ecg-wave { animation: ecgScroll ${ecgTheme.speed} linear infinite; }
   </style>
 
-  <g filter="url(#crt-s1)">
+  <g>
     <!-- Outer PS1 metallic frame -->
-    <rect x="2" y="2" width="816" height="144" fill="url(#bg-s1)" stroke="#5b658a" stroke-width="3"/>
-    <rect x="5" y="5" width="810" height="138" fill="none" stroke="#9aa6cc" stroke-width="1.5"/>
+    <rect x="2" y="2" width="816" height="164" fill="url(#bg-s1)" stroke="#5b658a" stroke-width="3"/>
+    <rect x="5" y="5" width="810" height="158" fill="none" stroke="#9aa6cc" stroke-width="1.5"/>
 
     <!-- Portrait Panel -->
-    <rect x="14" y="14" width="106" height="120" fill="#080b20" stroke="#7d89b0" stroke-width="2"/>
-    <rect x="15" y="15" width="104" height="23" fill="url(#hdr-s1)"/>
-    ${pxText(CONFIG.portraitName, 67, 21, { sx: 1.8, sy: 1.7, fill: "#f8fafc", align: "center" })}
-    <g transform="translate(31, 45) scale(4.5)" shape-rendering="crispEdges">
+    <rect x="14" y="14" width="112" height="140" fill="#080b20" stroke="#7d89b0" stroke-width="2"/>
+    <rect x="15" y="15" width="110" height="27" fill="url(#hdr-s1)"/>
+    ${pxText(CONFIG.portraitName, 70, 21, { sx: 2.1, sy: 2.1, fill: "#f8fafc", align: "center" })}
+    <g transform="translate(30, 50) scale(5)" shape-rendering="crispEdges">
       <rect x="4" y="1" width="8" height="3" fill="#1e293b"/>
       <rect x="3" y="3" width="10" height="2" fill="#0f172a"/>
       <rect x="4" y="4" width="8" height="6" fill="#e5b895"/>
@@ -489,35 +470,33 @@ function buildStatusSvg(data) {
     </g>
 
     <!-- ECG Heartbeat Panel -->
-    <rect x="130" y="14" width="464" height="120" fill="#030b06" stroke="#7d89b0" stroke-width="2"/>
-    <rect x="131" y="15" width="25" height="118" fill="url(#hdr-s1)"/>
-    <g transform="rotate(-90 144 74)">
-      ${pxText("ECG", 144, 68, { sx: 1.6, sy: 1.5, fill: "#dbeafe", align: "center" })}
+    <rect x="136" y="14" width="446" height="140" fill="#030b06" stroke="#7d89b0" stroke-width="2"/>
+    <rect x="137" y="15" width="26" height="138" fill="url(#hdr-s1)"/>
+    <g transform="rotate(-90 150 84)">
+      ${pxText("ECG", 150, 77, { sx: 1.9, sy: 1.8, fill: "#dbeafe", align: "center" })}
     </g>
-    <rect x="157" y="16" width="435" height="116" fill="url(#ecgGrid)"/>
-    ${pxText(data.condition, 170, 24, { sx: 3.1, sy: 3.7, fill: ecgTheme.color, chroma: true })}
-    ${pxText(streakLabel, 582, 29, { sx: 1.45, sy: 2.0, fill: "#93c5fd", align: "right", chroma: true })}
+    <rect x="163" y="16" width="417" height="136" fill="url(#ecgGrid)"/>
+    ${pxText(data.condition, 176, 25, { sx: 3.5, sy: 4.1, fill: ecgTheme.color, chroma: true })}
+    ${pxText(streakLabel, 570, 31, { sx: 1.7, sy: 2.3, fill: "#93c5fd", align: "right", chroma: true })}
 
     <g clip-path="url(#ecgClip)">
-      <g class="ecg-wave" fill="none" stroke="${ecgTheme.color}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
-        <polyline points="${cycles.join(" ")}"/>
+      <!-- Pure-vector soft phosphor halo + crisp core heartbeat -->
+      <g class="ecg-wave" fill="none" stroke-linejoin="round" stroke-linecap="round">
+        <polyline points="${polyPoints}" stroke="${ecgTheme.color}" stroke-width="7.5" stroke-opacity="0.22"/>
+        <polyline points="${polyPoints}" stroke="${ecgTheme.color}" stroke-width="3.2"/>
       </g>
     </g>
 
     <!-- EQUIP Panel -->
-    <rect x="604" y="14" width="202" height="120" fill="#0c1133" stroke="#7d89b0" stroke-width="2"/>
-    <rect x="605" y="15" width="200" height="23" fill="url(#hdr-s1)"/>
-    ${pxText("EQUIP", 705, 21, { sx: 1.8, sy: 1.7, fill: "#f8fafc", align: "center" })}
-    <rect x="618" y="49" width="56" height="44" fill="${CONFIG.equip.color}" stroke="#bfdbfe" stroke-width="2"/>
-    ${pxText(CONFIG.equip.badge, 646, 63, { sx: 2.6, sy: 2.5, fill: "#ffffff", align: "center" })}
-    ${pxText(CONFIG.equip.name, 684, 52, { sx: 1.7, sy: 2.3, fill: "#ffffff", chroma: true })}
-    ${pxText(CONFIG.equip.sub, 684, 75, { sx: 1.4, sy: 1.9, fill: "#93c5fd" })}
-    ${pxText("∞", 794, 108, { sx: 3.2, sy: 2.8, fill: "#4ade80", align: "right" })}
+    <rect x="592" y="14" width="214" height="140" fill="#0c1133" stroke="#7d89b0" stroke-width="2"/>
+    <rect x="593" y="15" width="212" height="27" fill="url(#hdr-s1)"/>
+    ${pxText("EQUIP", 699, 21, { sx: 2.1, sy: 2.1, fill: "#f8fafc", align: "center" })}
+    <rect x="606" y="56" width="58" height="46" fill="${CONFIG.equip.color}" stroke="#bfdbfe" stroke-width="2"/>
+    ${pxText(CONFIG.equip.badge, 635, 70, { sx: 2.8, sy: 2.7, fill: "#ffffff", align: "center" })}
+    ${pxText(CONFIG.equip.name, 674, 58, { sx: 2.0, sy: 2.6, fill: "#ffffff" })}
+    ${pxText(CONFIG.equip.sub, 674, 84, { sx: 1.65, sy: 2.1, fill: "#93c5fd" })}
+    ${pxText("∞", 796, 121, { sx: 3.6, sy: 3.2, fill: "#4ade80", align: "right" })}
   </g>
-
-  <!-- Scanlines + CRT vignette -->
-  <rect x="2" y="2" width="816" height="144" fill="url(#scan-s1)"/>
-  <rect x="2" y="2" width="816" height="144" fill="url(#vig-s1)"/>
 </svg>`;
 }
 
@@ -564,7 +543,7 @@ function buildInventorySvg(data) {
 
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 406 276" width="406" height="276" role="img" aria-label="MIKE623 PS1 Inventory 8/8">
   ${sharedCrtDefs("s2")}
-  <g filter="url(#crt-s2)">
+  <g>
     <rect x="2" y="2" width="402" height="272" fill="url(#bg-s2)" stroke="#5b658a" stroke-width="3"/>
     <rect x="5" y="5" width="396" height="266" fill="none" stroke="#9aa6cc" stroke-width="1.3"/>
     <rect x="12" y="12" width="382" height="25" fill="url(#hdr-s2)"/>
@@ -572,8 +551,6 @@ function buildInventorySvg(data) {
     ${pxText("8/8", 385, 18, { sx: 1.75, sy: 1.75, fill: "#fde047", align: "right" })}
     ${slotSvg}
   </g>
-  <rect x="2" y="2" width="402" height="272" fill="url(#scan-s2)"/>
-  <rect x="2" y="2" width="402" height="272" fill="url(#vig-s2)"/>
 </svg>`;
 }
 
@@ -610,7 +587,7 @@ function buildFileMapSvg(data) {
 
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 406 276" width="406" height="276" role="img" aria-label="MIKE623 PS1 Files and Sector Commit Map">
   ${sharedCrtDefs("s3")}
-  <g filter="url(#crt-s3)">
+  <g>
     <rect x="2" y="2" width="402" height="272" fill="url(#bg-s3)" stroke="#5b658a" stroke-width="3"/>
     <rect x="5" y="5" width="396" height="266" fill="none" stroke="#9aa6cc" stroke-width="1.3"/>
 
@@ -628,32 +605,28 @@ function buildFileMapSvg(data) {
     <rect x="12" y="177" width="382" height="87" fill="#070a1e" stroke="#3f4a87" stroke-width="1.5"/>
     ${cells.join("")}
   </g>
-  <rect x="2" y="2" width="402" height="272" fill="url(#scan-s3)"/>
-  <rect x="2" y="2" width="402" height="272" fill="url(#vig-s3)"/>
 </svg>`;
 }
 
 // ============================================================================
-// 4. BOTTOM TYPEWRITER DIALOG BOX SVG (820 x 76)
+// 4. BOTTOM TYPEWRITER DIALOG BOX SVG (820 x 84)
 // ============================================================================
 function buildDialogSvg() {
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 76" width="820" height="76" role="img" aria-label="MIKE623 Bio Dialog">
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 84" width="820" height="84" role="img" aria-label="MIKE623 Bio Dialog">
   ${sharedCrtDefs("s4")}
   <style>
     @keyframes blinkCur { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
     .cur { animation: blinkCur 1s steps(1, end) infinite; }
   </style>
-  <g filter="url(#crt-s4)">
-    <rect x="2" y="2" width="816" height="72" fill="#080b1f" stroke="#5b658a" stroke-width="3"/>
-    <rect x="5" y="5" width="810" height="66" fill="none" stroke="#9aa6cc" stroke-width="1.5"/>
-    ${pxText(CONFIG.dialogLine1, 22, 16, { sx: 1.9, sy: 2.5, fill: "#f8fafc", chroma: true })}
-    ${pxText(CONFIG.dialogLine2, 22, 43, { sx: 1.9, sy: 2.5, fill: "#cbd5e1", chroma: true })}
+  <g>
+    <rect x="2" y="2" width="816" height="80" fill="#080b1f" stroke="#5b658a" stroke-width="3"/>
+    <rect x="5" y="5" width="810" height="74" fill="none" stroke="#9aa6cc" stroke-width="1.5"/>
+    ${pxText(CONFIG.dialogLine1, 22, 18, { sx: 2.0, sy: 2.7, fill: "#f8fafc" })}
+    ${pxText(CONFIG.dialogLine2, 22, 48, { sx: 2.0, sy: 2.7, fill: "#cbd5e1" })}
     <g class="cur">
-      ${pxText("▼", 796, 46, { sx: 2.4, sy: 2.4, fill: "#fde047", align: "right" })}
+      ${pxText("▼", 796, 51, { sx: 2.6, sy: 2.6, fill: "#fde047", align: "right" })}
     </g>
   </g>
-  <rect x="2" y="2" width="816" height="72" fill="url(#scan-s4)"/>
-  <rect x="2" y="2" width="816" height="72" fill="url(#vig-s4)"/>
 </svg>`;
 }
 
@@ -664,14 +637,13 @@ function buildRadioBadgeSvg(item) {
   const id = `r-${item.id}`;
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 34" width="192" height="34" role="img" aria-label="Radio ${item.label}">
   ${sharedCrtDefs(id)}
-  <g filter="url(#crt-${id})">
+  <g>
     <rect x="1.5" y="1.5" width="189" height="31" fill="url(#hdr-${id})" stroke="#8a97c2" stroke-width="2"/>
     <rect x="3" y="3" width="186" height="28" fill="none" stroke="#1b213b" stroke-width="1.2"/>
     <rect x="9" y="12" width="8" height="10" fill="#4ade80"/>
     ${pxText(item.label, 25, 11, { sx: 1.65, sy: 1.7, fill: "#f8fafc" })}
     ${pxText(item.freq, 182, 12, { sx: 1.25, sy: 1.5, fill: "#fde047", align: "right" })}
   </g>
-  <rect x="1.5" y="1.5" width="189" height="31" fill="url(#scan-${id})"/>
 </svg>`;
 }
 
