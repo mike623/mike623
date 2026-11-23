@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="https://github.com/mike623">
-    <img src="./assets/status-ecg.svg" width="820" alt="mike623 PS1 Biohazard Status — Fine · 131d streak · 7,956 saves" />
+    <img src="./assets/status-ecg.svg" width="820" alt="mike623 PS1 Biohazard Status — Fine · 131d streak · 7,959 saves" />
   </a>
 </p>
 
@@ -11,7 +11,7 @@
     <img src="./assets/inventory.svg" width="406" alt="ITEM // Dynamic Inventory 8/8" />
   </a>
   <a href="https://github.com/mike623?tab=repositories">
-    <img src="./assets/file-map.svg" width="406" alt="FILE // 68 Public Repos & MAP // 7,956 Sector Commits" />
+    <img src="./assets/file-map.svg" width="406" alt="FILE // 68 Public Repos & MAP // 7,959 Sector Commits" />
   </a>
 </p>
 
