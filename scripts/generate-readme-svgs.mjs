@@ -166,6 +166,7 @@ function pxText(text, x, y, opts = {}) {
     fill = "#f8fafc",
     align = "left",
     shadow = true,
+    chroma = false,
   } = opts;
 
   const w = measurePixelText(text, sx, gap);
@@ -198,11 +199,21 @@ function pxText(text, x, y, opts = {}) {
 
   if (!parts.length) return "";
   const d = parts.join("");
-  if (!shadow) return `<path d="${d}" fill="${fill}" shape-rendering="crispEdges"/>`;
+  if (!shadow && !chroma) return `<path d="${d}" fill="${fill}" shape-rendering="crispEdges"/>`;
   const id = `pt${++pathSeq}`;
-  const dx = Math.max(1, +(sx * 0.65).toFixed(2));
-  const dy = Math.max(1, +(sy * 0.55).toFixed(2));
-  return `<defs><path id="${id}" d="${d}" shape-rendering="crispEdges"/></defs><use href="#${id}" fill="#000000" fill-opacity="0.85" x="${dx}" y="${dy}"/><use href="#${id}" fill="${fill}"/>`;
+  let out = `<defs><path id="${id}" d="${d}" shape-rendering="crispEdges"/></defs>`;
+  if (shadow) {
+    const dx = Math.max(1, +(sx * 0.65).toFixed(2));
+    const dy = Math.max(1, +(sy * 0.55).toFixed(2));
+    out += `<use href="#${id}" fill="#000000" fill-opacity="0.85" x="${dx}" y="${dy}"/>`;
+  }
+  if (chroma) {
+    // Hidden by default (Mobile / native apps); enabled on Desktop via @media (hover: hover) and (pointer: fine)
+    out += `<use href="#${id}" class="crt-chroma" fill="#ff3b5c" opacity="0" x="-0.55"/>`;
+    out += `<use href="#${id}" class="crt-chroma" fill="#38bdf8" opacity="0" x="0.55"/>`;
+  }
+  out += `<use href="#${id}" fill="${fill}"/>`;
+  return out;
 }
 
 function formatCompact(n) {
@@ -498,9 +509,11 @@ function getFallbackData() {
 }
 
 // ============================================================================
-// Shared PS1 Gradient Defs (Crisp pixel art)
+// Shared PS1 Defs + Desktop-Only CRT CSS
+// Mobile / native GitHub apps ignore @media (hover: hover) and (pointer: fine),
+// keeping 100% crisp 3x Retina rendering on phones while Desktop gets PS1 CRT Soft!
 // ============================================================================
-function sharedDefs(idSuffix) {
+function sharedDefs(idSuffix, extraCss = "") {
   return `
   <defs>
     <linearGradient id="bg-${idSuffix}" x1="0" y1="0" x2="0" y2="1">
@@ -512,7 +525,32 @@ function sharedDefs(idSuffix) {
       <stop offset="0%" stop-color="#68749e"/>
       <stop offset="100%" stop-color="#37405e"/>
     </linearGradient>
-  </defs>`;
+    <radialGradient id="vig-${idSuffix}" cx="50%" cy="50%" r="68%">
+      <stop offset="64%" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.42"/>
+    </radialGradient>
+    <pattern id="scan-${idSuffix}" width="4" height="4" patternUnits="userSpaceOnUse">
+      <rect width="4" height="2" fill="rgba(0,0,0,0)"/>
+      <rect y="2" width="4" height="2" fill="rgba(0,0,0,0.20)"/>
+    </pattern>
+    <filter id="crt-${idSuffix}" x="-2%" y="-2%" width="104%" height="104%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="0.52" result="soft"/>
+      <feComponentTransfer in="soft">
+        <feFuncR type="linear" slope="1.05"/>
+        <feFuncG type="linear" slope="1.06"/>
+        <feFuncB type="linear" slope="1.08"/>
+      </feComponentTransfer>
+    </filter>
+  </defs>
+  <style>
+    .crt-fx { opacity: 0; }
+    .crt-chroma { opacity: 0; }
+    @media (hover: hover) and (pointer: fine) {
+      .crt-root { filter: url(#crt-${idSuffix}); }
+      .crt-fx { opacity: 1; }
+      .crt-chroma { opacity: 0.24; }
+    }${extraCss ? `\n    ${extraCss}` : ""}
+  </style>`;
 }
 
 // ============================================================================
@@ -547,22 +585,19 @@ function buildStatusSvg(data) {
   const polyPoints = cycles.join(" ");
 
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 168" width="2460" height="504" role="img" aria-label="${USERNAME} PS1 Biohazard Status ECG ${data.condition}">
-  ${sharedDefs("s1")}
+  ${sharedDefs(
+    "s1",
+    `@keyframes ecgScroll { 0% { transform: translateX(0px); } 100% { transform: translateX(-110px); } }
+    .ecg-wave { animation: ecgScroll ${ecgTheme.speed} linear infinite; }`
+  )}
   <defs>
     <pattern id="ecgGrid" width="12" height="12" patternUnits="userSpaceOnUse">
       <path d="M 12 0 L 0 0 0 12" fill="none" stroke="${ecgTheme.grid}" stroke-width="1"/>
     </pattern>
     <clipPath id="ecgClip"><rect x="163" y="16" width="417" height="136"/></clipPath>
   </defs>
-  <style>
-    @keyframes ecgScroll {
-      0% { transform: translateX(0px); }
-      100% { transform: translateX(-110px); }
-    }
-    .ecg-wave { animation: ecgScroll ${ecgTheme.speed} linear infinite; }
-  </style>
 
-  <g>
+  <g class="crt-root">
     <rect x="2" y="2" width="816" height="164" fill="url(#bg-s1)" stroke="#5b658a" stroke-width="3"/>
     <rect x="5" y="5" width="810" height="158" fill="none" stroke="#9aa6cc" stroke-width="1.5"/>
 
@@ -589,8 +624,8 @@ function buildStatusSvg(data) {
       ${pxText("ECG", 150, 77, { sx: 1.9, sy: 1.8, fill: "#dbeafe", align: "center" })}
     </g>
     <rect x="163" y="16" width="417" height="136" fill="url(#ecgGrid)"/>
-    ${pxText(data.condition, 176, 25, { sx: 3.5, sy: 4.1, fill: ecgTheme.color })}
-    ${pxText(streakLabel, 570, 31, { sx: 1.7, sy: 2.3, fill: "#93c5fd", align: "right" })}
+    ${pxText(data.condition, 176, 25, { sx: 3.5, sy: 4.1, fill: ecgTheme.color, chroma: true })}
+    ${pxText(streakLabel, 570, 31, { sx: 1.7, sy: 2.3, fill: "#93c5fd", align: "right", chroma: true })}
 
     <g clip-path="url(#ecgClip)">
       <g class="ecg-wave" fill="none" stroke-linejoin="round" stroke-linecap="round">
@@ -605,10 +640,12 @@ function buildStatusSvg(data) {
     ${pxText("EQUIP", 699, 21, { sx: 2.1, sy: 2.1, fill: "#f8fafc", align: "center" })}
     <rect x="606" y="56" width="58" height="46" fill="${topLang.color}" stroke="#bfdbfe" stroke-width="2"/>
     ${pxText(topLang.badge, 635, 70, { sx: 2.8, sy: 2.7, fill: "#ffffff", align: "center" })}
-    ${pxText(truncate(topLang.name, 10), 674, 58, { sx: 2.0, sy: 2.6, fill: "#ffffff" })}
+    ${pxText(truncate(topLang.name, 10), 674, 58, { sx: 2.0, sy: 2.6, fill: "#ffffff", chroma: true })}
     ${pxText(`${topLang.count} REPOS`, 674, 84, { sx: 1.65, sy: 2.1, fill: "#93c5fd" })}
     ${pxText("∞", 796, 121, { sx: 3.6, sy: 3.2, fill: "#4ade80", align: "right" })}
   </g>
+  <rect x="2" y="2" width="816" height="164" fill="url(#scan-s1)" class="crt-fx" opacity="0"/>
+  <rect x="2" y="2" width="816" height="164" fill="url(#vig-s1)" class="crt-fx" opacity="0"/>
 </svg>`;
 }
 
@@ -667,7 +704,7 @@ function buildInventorySvg(data) {
       <rect x="${x}" y="${y}" width="188" height="50" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>
       <rect x="${x + 7}" y="${y + 9}" width="32" height="32" fill="${slot.color}" stroke="#e2e8f0" stroke-width="1.5"/>
       ${pxText(slot.badge, x + 23, y + 19, { sx: 1.7, sy: 1.7, fill: "#ffffff", align: "center" })}
-      ${pxText(slot.name, x + 46, y + 10, { sx: 1.45, sy: 2.0, fill: "#f8fafc" })}
+      ${pxText(slot.name, x + 46, y + 10, { sx: 1.45, sy: 2.0, fill: "#f8fafc", chroma: true })}
       ${pxText(slot.tag, x + 46, y + 30, { sx: 1.15, sy: 1.55, fill: "#93c5fd" })}
       ${pxText(slot.qty, x + 181, y + 34, { sx: 1.35, sy: 1.5, fill: "#4ade80", align: "right" })}`;
     })
@@ -675,7 +712,7 @@ function buildInventorySvg(data) {
 
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 406 276" width="1218" height="828" role="img" aria-label="${USERNAME} PS1 Inventory 8/8">
   ${sharedDefs("s2")}
-  <g>
+  <g class="crt-root">
     <rect x="2" y="2" width="402" height="272" fill="url(#bg-s2)" stroke="#5b658a" stroke-width="3"/>
     <rect x="5" y="5" width="396" height="266" fill="none" stroke="#9aa6cc" stroke-width="1.3"/>
     <rect x="12" y="12" width="382" height="25" fill="url(#hdr-s2)"/>
@@ -683,6 +720,8 @@ function buildInventorySvg(data) {
     ${pxText("8/8", 385, 18, { sx: 1.75, sy: 1.75, fill: "#fde047", align: "right" })}
     ${slotSvg}
   </g>
+  <rect x="2" y="2" width="402" height="272" fill="url(#scan-s2)" class="crt-fx" opacity="0"/>
+  <rect x="2" y="2" width="402" height="272" fill="url(#vig-s2)" class="crt-fx" opacity="0"/>
 </svg>`;
 }
 
@@ -700,7 +739,7 @@ function buildFileMapSvg(data) {
       return `
       <rect x="12" y="${y}" width="382" height="28" fill="#141a47" stroke="#3f4a87" stroke-width="1.5"/>
       ${pxText(num, 20, y + 7, { sx: 1.4, sy: 1.9, fill: "#fde047" })}
-      ${pxText(nameStr, 50, y + 7, { sx: 1.45, sy: 1.95, fill: "#f8fafc" })}
+      ${pxText(nameStr, 50, y + 7, { sx: 1.45, sy: 1.95, fill: "#f8fafc", chroma: true })}
       ${pxText(langStr, 386, y + 9, { sx: 1.25, sy: 1.5, fill: "#4ade80", align: "right" })}`;
     })
     .join("");
@@ -719,7 +758,7 @@ function buildFileMapSvg(data) {
 
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 406 276" width="1218" height="828" role="img" aria-label="${USERNAME} PS1 Files and Sector Commit Map">
   ${sharedDefs("s3")}
-  <g>
+  <g class="crt-root">
     <rect x="2" y="2" width="402" height="272" fill="url(#bg-s3)" stroke="#5b658a" stroke-width="3"/>
     <rect x="5" y="5" width="396" height="266" fill="none" stroke="#9aa6cc" stroke-width="1.3"/>
 
@@ -737,6 +776,8 @@ function buildFileMapSvg(data) {
     <rect x="12" y="177" width="382" height="87" fill="#070a1e" stroke="#3f4a87" stroke-width="1.5"/>
     ${cells.join("")}
   </g>
+  <rect x="2" y="2" width="402" height="272" fill="url(#scan-s3)" class="crt-fx" opacity="0"/>
+  <rect x="2" y="2" width="402" height="272" fill="url(#vig-s3)" class="crt-fx" opacity="0"/>
 </svg>`;
 }
 
@@ -754,20 +795,22 @@ function buildDialogSvg(data) {
   const line2 = truncate(line2Raw, 60);
 
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 84" width="2460" height="252" role="img" aria-label="${USERNAME} Bio Dialog">
-  ${sharedDefs("s4")}
-  <style>
-    @keyframes blinkCur { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
-    .cur { animation: blinkCur 1s steps(1, end) infinite; }
-  </style>
-  <g>
+  ${sharedDefs(
+    "s4",
+    `@keyframes blinkCur { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+    .cur { animation: blinkCur 1s steps(1, end) infinite; }`
+  )}
+  <g class="crt-root">
     <rect x="2" y="2" width="816" height="80" fill="#080b1f" stroke="#5b658a" stroke-width="3"/>
     <rect x="5" y="5" width="810" height="74" fill="none" stroke="#9aa6cc" stroke-width="1.5"/>
-    ${pxText(line1, 22, 18, { sx: 2.0, sy: 2.7, fill: "#f8fafc" })}
-    ${pxText(line2, 22, 48, { sx: 2.0, sy: 2.7, fill: "#cbd5e1" })}
+    ${pxText(line1, 22, 18, { sx: 2.0, sy: 2.7, fill: "#f8fafc", chroma: true })}
+    ${pxText(line2, 22, 48, { sx: 2.0, sy: 2.7, fill: "#cbd5e1", chroma: true })}
     <g class="cur">
       ${pxText("▼", 796, 51, { sx: 2.6, sy: 2.6, fill: "#fde047", align: "right" })}
     </g>
   </g>
+  <rect x="2" y="2" width="816" height="80" fill="url(#scan-s4)" class="crt-fx" opacity="0"/>
+  <rect x="2" y="2" width="816" height="80" fill="url(#vig-s4)" class="crt-fx" opacity="0"/>
 </svg>`;
 }
 
@@ -778,13 +821,14 @@ function buildRadioBadgeSvg(item) {
   const id = `r-${item.id}`;
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 34" width="576" height="102" role="img" aria-label="Radio ${item.label}">
   ${sharedDefs(id)}
-  <g>
+  <g class="crt-root">
     <rect x="1.5" y="1.5" width="189" height="31" fill="url(#hdr-${id})" stroke="#8a97c2" stroke-width="2"/>
     <rect x="3" y="3" width="186" height="28" fill="none" stroke="#1b213b" stroke-width="1.2"/>
     <rect x="9" y="12" width="8" height="10" fill="#4ade80"/>
     ${pxText(item.label, 25, 11, { sx: 1.65, sy: 1.7, fill: "#f8fafc" })}
     ${pxText(item.freq, 182, 12, { sx: 1.25, sy: 1.5, fill: "#fde047", align: "right" })}
   </g>
+  <rect x="1.5" y="1.5" width="189" height="31" fill="url(#scan-${id})" class="crt-fx" opacity="0"/>
 </svg>`;
 }
 
