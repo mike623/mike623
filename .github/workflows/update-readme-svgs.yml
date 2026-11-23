@@ -1,9 +1,9 @@
-name: Update PS1 Biohazard Profile SVGs
+name: Update Dynamic PS1 Biohazard Profile
 
 on:
   schedule:
-    # Refresh daily at 03:15 UTC
-    - cron: "15 3 * * *"
+    # Refresh every 6 hours so ECG, Inventory, FILE archive, and README stay live
+    - cron: "15 */6 * * *"
   workflow_dispatch:
   push:
     branches: [main]
@@ -15,7 +15,7 @@ permissions:
   contents: write
 
 jobs:
-  update-svgs:
+  update-profile:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -26,20 +26,20 @@ jobs:
         with:
           node-version: "22"
 
-      - name: Generate PS1 Biohazard SVGs
+      - name: Generate dynamic README.md and PS1 Biohazard SVGs
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_USERNAME: ${{ github.repository_owner }}
         run: node scripts/generate-readme-svgs.mjs
 
-      - name: Commit updated SVGs
+      - name: Commit updated README and SVGs
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add assets/*.svg
+          git add README.md assets/*.svg
           if ! git diff --cached --quiet; then
-            git commit -m "chore: refresh PS1 Biohazard profile SVGs"
+            git commit -m "chore: refresh dynamic PS1 Biohazard profile"
             git push
           else
-            echo "No SVG changes to commit."
+            echo "No profile changes to commit."
           fi
