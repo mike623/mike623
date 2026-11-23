@@ -195,11 +195,6 @@ function pxText(text, x, y, opts = {}) {
     const dy = Math.max(1, +(sy * 0.55).toFixed(2));
     out += `<use href="#${id}" fill="#000000" fill-opacity="0.85" x="${dx}" y="${dy}"/>`;
   }
-  if (chroma) {
-    // Pure-vector PS1 CRT RGB phosphor fringe (stays razor-sharp on iOS Retina; avoids WebKit 1x filter blur bug)
-    out += `<use href="#${id}" fill="#ff3b5c" fill-opacity="0.24" x="-0.55"/>`;
-    out += `<use href="#${id}" fill="#38bdf8" fill-opacity="0.24" x="0.55"/>`;
-  }
   out += `<use href="#${id}" fill="${fill}"/>`;
   return out;
 }
@@ -395,7 +390,7 @@ function getFallbackData() {
 }
 
 // ============================================================================
-// Shared PS1 CRT Defs (Retina-safe: pure-vector scanlines + vignette, no 1x filter rasterization)
+// Shared PS1 Gradient Defs (Crisp pixel art — CRT effects disabled)
 // ============================================================================
 function sharedCrtDefs(idSuffix) {
   return `
@@ -409,14 +404,6 @@ function sharedCrtDefs(idSuffix) {
       <stop offset="0%" stop-color="#68749e"/>
       <stop offset="100%" stop-color="#37405e"/>
     </linearGradient>
-    <radialGradient id="vig-${idSuffix}" cx="50%" cy="50%" r="68%">
-      <stop offset="66%" stop-color="#000000" stop-opacity="0"/>
-      <stop offset="100%" stop-color="#000000" stop-opacity="0.38"/>
-    </radialGradient>
-    <pattern id="scan-${idSuffix}" width="4" height="4" patternUnits="userSpaceOnUse">
-      <rect width="4" height="2" fill="rgba(0,0,0,0)"/>
-      <rect y="2" width="4" height="2" fill="rgba(0,0,0,0.17)"/>
-    </pattern>
   </defs>`;
 }
 
@@ -506,14 +493,10 @@ function buildStatusSvg(data) {
     ${pxText("EQUIP", 699, 21, { sx: 2.1, sy: 2.1, fill: "#f8fafc", align: "center" })}
     <rect x="606" y="56" width="58" height="46" fill="${CONFIG.equip.color}" stroke="#bfdbfe" stroke-width="2"/>
     ${pxText(CONFIG.equip.badge, 635, 70, { sx: 2.8, sy: 2.7, fill: "#ffffff", align: "center" })}
-    ${pxText(CONFIG.equip.name, 674, 58, { sx: 2.0, sy: 2.6, fill: "#ffffff", chroma: true })}
+    ${pxText(CONFIG.equip.name, 674, 58, { sx: 2.0, sy: 2.6, fill: "#ffffff" })}
     ${pxText(CONFIG.equip.sub, 674, 84, { sx: 1.65, sy: 2.1, fill: "#93c5fd" })}
     ${pxText("∞", 796, 121, { sx: 3.6, sy: 3.2, fill: "#4ade80", align: "right" })}
   </g>
-
-  <!-- Scanlines + CRT vignette -->
-  <rect x="2" y="2" width="816" height="164" fill="url(#scan-s1)"/>
-  <rect x="2" y="2" width="816" height="164" fill="url(#vig-s1)"/>
 </svg>`;
 }
 
@@ -568,8 +551,6 @@ function buildInventorySvg(data) {
     ${pxText("8/8", 385, 18, { sx: 1.75, sy: 1.75, fill: "#fde047", align: "right" })}
     ${slotSvg}
   </g>
-  <rect x="2" y="2" width="402" height="272" fill="url(#scan-s2)"/>
-  <rect x="2" y="2" width="402" height="272" fill="url(#vig-s2)"/>
 </svg>`;
 }
 
@@ -624,8 +605,6 @@ function buildFileMapSvg(data) {
     <rect x="12" y="177" width="382" height="87" fill="#070a1e" stroke="#3f4a87" stroke-width="1.5"/>
     ${cells.join("")}
   </g>
-  <rect x="2" y="2" width="402" height="272" fill="url(#scan-s3)"/>
-  <rect x="2" y="2" width="402" height="272" fill="url(#vig-s3)"/>
 </svg>`;
 }
 
@@ -642,14 +621,12 @@ function buildDialogSvg() {
   <g>
     <rect x="2" y="2" width="816" height="80" fill="#080b1f" stroke="#5b658a" stroke-width="3"/>
     <rect x="5" y="5" width="810" height="74" fill="none" stroke="#9aa6cc" stroke-width="1.5"/>
-    ${pxText(CONFIG.dialogLine1, 22, 18, { sx: 2.0, sy: 2.7, fill: "#f8fafc", chroma: true })}
-    ${pxText(CONFIG.dialogLine2, 22, 48, { sx: 2.0, sy: 2.7, fill: "#cbd5e1", chroma: true })}
+    ${pxText(CONFIG.dialogLine1, 22, 18, { sx: 2.0, sy: 2.7, fill: "#f8fafc" })}
+    ${pxText(CONFIG.dialogLine2, 22, 48, { sx: 2.0, sy: 2.7, fill: "#cbd5e1" })}
     <g class="cur">
       ${pxText("▼", 796, 51, { sx: 2.6, sy: 2.6, fill: "#fde047", align: "right" })}
     </g>
   </g>
-  <rect x="2" y="2" width="816" height="80" fill="url(#scan-s4)"/>
-  <rect x="2" y="2" width="816" height="80" fill="url(#vig-s4)"/>
 </svg>`;
 }
 
@@ -667,7 +644,6 @@ function buildRadioBadgeSvg(item) {
     ${pxText(item.label, 25, 11, { sx: 1.65, sy: 1.7, fill: "#f8fafc" })}
     ${pxText(item.freq, 182, 12, { sx: 1.25, sy: 1.5, fill: "#fde047", align: "right" })}
   </g>
-  <rect x="1.5" y="1.5" width="189" height="31" fill="url(#scan-${id})"/>
 </svg>`;
 }
 
