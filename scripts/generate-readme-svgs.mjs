@@ -20,6 +20,12 @@ const README_PATH = path.resolve("README.md");
 const CONFIG = {
   portraitName: "MIKE",
   fallbackBio: "Full-stack developer building fast UIs & reliable systems",
+  // Core Cloud & AI loadout pinned into slots 6-8 (slots 1-5 auto-fill from top public languages)
+  pinnedItems: [
+    { name: "AWS", tag: "Cloud", qty: "OPS", badge: "AW", color: "#d97706" },
+    { name: "Anthropic", tag: "Claude AI", qty: "AI", badge: "AN", color: "#c2410c" },
+    { name: "OpenAI", tag: "GPT / AI", qty: "AI", badge: "OA", color: "#0f766e" },
+  ],
   // Static social channels not exposed on GitHub's profile API; websiteUrl is auto-synced from GitHub
   socialRadioLinks: [
     { id: "linkedin", label: "LINKEDIN", freq: "102.4", url: "https://linkedin.com/in/mike-wong-namike" },
@@ -661,7 +667,8 @@ function buildStatusSvg(data) {
 // 2. DYNAMIC INVENTORY 2x4 CARD SVG (406 x 276)
 // ============================================================================
 function buildInventorySvg(data) {
-  const dynamicSlots = data.topLanguages.slice(0, 6).map((lang, idx) => ({
+  const dynamicCount = Math.max(0, 8 - CONFIG.pinnedItems.length);
+  const dynamicSlots = data.topLanguages.slice(0, dynamicCount).map((lang, idx) => ({
     name: truncate(lang.name, 10),
     tag: `${lang.count} ${lang.count === 1 ? "repo" : "repos"}`,
     qty: `${lang.pct}%`,
@@ -670,7 +677,7 @@ function buildInventorySvg(data) {
     selected: idx === 0,
   }));
 
-  while (dynamicSlots.length < 6) {
+  while (dynamicSlots.length < dynamicCount) {
     dynamicSlots.push({
       name: "Empty",
       tag: "Slot",
@@ -681,23 +688,7 @@ function buildInventorySvg(data) {
     });
   }
 
-  const slots = [
-    ...dynamicSlots,
-    {
-      name: "Ink Ribbon",
-      tag: "Git Saves",
-      qty: formatCompact(data.totalContributions),
-      badge: "IT",
-      color: "#475569",
-    },
-    {
-      name: "Green Herb",
-      tag: "Streak",
-      qty: data.currentStreak > 0 ? `${data.currentStreak}d` : "x3",
-      badge: "++",
-      color: "#16a34a",
-    },
-  ];
+  const slots = [...dynamicSlots, ...CONFIG.pinnedItems];
 
   const slotSvg = slots
     .map((slot, idx) => {
