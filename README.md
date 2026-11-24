@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="https://github.com/mike623">
-    <img src="./assets/status-ecg.svg" width="820" alt="mike623 PS1 Biohazard Status — Fine · 131d streak · 7,964 saves" />
+    <img src="./assets/status-ecg.svg" width="820" alt="mike623 PS1 Biohazard Status — Fine · 132d streak · 7,981 saves" />
   </a>
 </p>
 
@@ -11,7 +11,7 @@
     <img src="./assets/inventory.svg" width="406" alt="ITEM // Dynamic Inventory 8/8" />
   </a>
   <a href="https://github.com/mike623?tab=repositories">
-    <img src="./assets/file-map.svg" width="406" alt="FILE // 68 Public Repos & MAP // 7,964 Sector Commits" />
+    <img src="./assets/file-map.svg" width="406" alt="FILE // 69 Public Repos & MAP // 7,981 Sector Commits" />
   </a>
 </p>
 
@@ -37,16 +37,16 @@
 </p>
 
 <details>
-  <summary>📁 <strong>FILE // PUBLIC REPO ARCHIVE (68 total · last save 2026-11-23)</strong></summary>
+  <summary>📁 <strong>FILE // PUBLIC REPO ARCHIVE (69 total · last save 2026-11-24)</strong></summary>
 
 <br/>
 
 | # | File | Lang | ★ | Saved | Notes |
 | :-: | :--- | :-: | :-: | :-: | :--- |
-| `01` | [**dclt-badminton-ics**](https://github.com/mike623/dclt-badminton-ics) | `Python` | 1 | `2026-11-23` | — |
-| `02` | [**scottish-tartan-finder**](https://github.com/mike623/scottish-tartan-finder) | `HTML` | 0 | `2026-11-23` | Unofficial static Scottish tartan finder concept: PRD, Astro scaffold,.. |
-| `03` | [**kanagawa-orca-theme**](https://github.com/mike623/kanagawa-orca-theme) | `Python` | 0 | `2026-11-17` | Kanagawa Wave, Dragon and Lotus themes for Orca |
-| `04` | [**openkore**](https://github.com/mike623/openkore) | `Perl` | 0 | `2026-11-08` | OpenKore for Ragnarok Offline: rAthena 2025-07-16, XKore 2 for nostalR.. |
-| `05` | [**person-appstore**](https://github.com/mike623/person-appstore) | `JavaScript` | 0 | `2026-11-06` | — |
+| `01` | [**dclt-badminton-ics**](https://github.com/mike623/dclt-badminton-ics) | `Python` | 1 | `2026-11-24` | — |
+| `02` | [**norvane-pip**](https://github.com/mike623/norvane-pip) | `Rust` | 0 | `2026-11-23` | Cross-platform Tauri v2 Picture-in-Picture desktop wrapper for Norvane.. |
+| `03` | [**scottish-tartan-finder**](https://github.com/mike623/scottish-tartan-finder) | `HTML` | 0 | `2026-11-23` | Unofficial static Scottish tartan finder concept: PRD, Astro scaffold,.. |
+| `04` | [**kanagawa-orca-theme**](https://github.com/mike623/kanagawa-orca-theme) | `Python` | 0 | `2026-11-17` | Kanagawa Wave, Dragon and Lotus themes for Orca |
+| `05` | [**openkore**](https://github.com/mike623/openkore) | `Perl` | 0 | `2026-11-08` | OpenKore for Ragnarok Offline: rAthena 2025-07-16, XKore 2 for nostalR.. |
 
 </details>
