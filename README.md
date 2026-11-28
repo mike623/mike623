@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="https://github.com/mike623">
-    <img src="./assets/status-ecg.svg" width="820" alt="mike623 PS1 Biohazard Status — Fine · 135d streak · 8,132 saves" />
+    <img src="./assets/status-ecg.svg" width="820" alt="mike623 PS1 Biohazard Status — Fine · 136d streak · 8,149 saves" />
   </a>
 </p>
 
@@ -11,7 +11,7 @@
     <img src="./assets/inventory.svg" width="406" alt="ITEM // Dynamic Inventory 8/8" />
   </a>
   <a href="https://github.com/mike623?tab=repositories">
-    <img src="./assets/file-map.svg" width="406" alt="FILE // 70 Public Repos & MAP // 8,132 Sector Commits" />
+    <img src="./assets/file-map.svg" width="406" alt="FILE // 70 Public Repos & MAP // 8,149 Sector Commits" />
   </a>
 </p>
 
@@ -37,13 +37,13 @@
 </p>
 
 <details>
-  <summary>📁 <strong>FILE // PUBLIC REPO ARCHIVE (70 total · last save 2026-11-27)</strong></summary>
+  <summary>📁 <strong>FILE // PUBLIC REPO ARCHIVE (70 total · last save 2026-11-28)</strong></summary>
 
 <br/>
 
 | # | File | Lang | ★ | Saved | Notes |
 | :-: | :--- | :-: | :-: | :-: | :--- |
-| `01` | [**dclt-badminton-ics**](https://github.com/mike623/dclt-badminton-ics) | `Python` | 1 | `2026-11-27` | — |
+| `01` | [**dclt-badminton-ics**](https://github.com/mike623/dclt-badminton-ics) | `Python` | 1 | `2026-11-28` | — |
 | `02` | [**daily-verse**](https://github.com/mike623/daily-verse) | `HTML` | 0 | `2026-11-27` | Daily bilingual Bible verse & reflection (EN + zh-TW) |
 | `03` | [**norvane-pip**](https://github.com/mike623/norvane-pip) | `Rust` | 0 | `2026-11-24` | Cross-platform Tauri v2 Picture-in-Picture desktop wrapper for Norvane.. |
 | `04` | [**scottish-tartan-finder**](https://github.com/mike623/scottish-tartan-finder) | `HTML` | 0 | `2026-11-23` | Unofficial static Scottish tartan finder concept: PRD, Astro scaffold,.. |
